@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartes éclair – Rome antique</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-yellow-50 to-red-50 min-h-screen flex items-center justify-center p-4">
+  <div id="root" class="w-full max-w-xl"></div>
+
+  <script type="text/babel">
+    const flashcards = [
+      {q: "1- Vous devez être capable de situer, sur une carte, l’emplacement de la ville de Rome et de Carthagee. Pages 137 et 150.", a: "Pages 137 et 150."},
+      {q: "2- Vous devez connaître les dates du début et de la fin des périodes suivantes : la Rome antique et Rome impériale (l’Empire).", a: "Rome antique : - VIII e siècle à 476.\nPériode de l’Empire : -27 à 476."},
+      {q: "3- Quels peuples ont fondé Rome?", a: "Les Latins et les Étrusques."},
+      {q: "4- En ordre chronologique, quels sont les trois formes de gouvernement que connaîtra la Rome antique?", a: "La monarchie, la république et l’Empire."},
+      {q: "5- Dans lequel de ces trois gouvernements le peuple participe t-il le plus?", a: "Lors de la république."},
+      {q: "6- Pour quelle raison principale Rome voulait vaincre et détruire la ville de Carthage?", a: "Pour le contrôle du commerce maritime sur la Méditerranée."},
+      {q: "7- Pourquoi Rome voulait conquérir et dominer la Gaule?", a: "Pour que les Gaulois cessent de les attaquer."},
+      {q: "8- Qu’est-ce que le Colisée romain et à quoi servait-il?", a: "C’est un amphithéâtre et il sert de lieu pour les jeux (combats de gladiateurs, mise à mort, combats navals)."},
+      {q: "9- Qu’est-ce que les thermes dans la Rome antique et à quoi servaient-ils?", a: "Les thermes sont en fait des bains publics."},
+      {q: "10- Qu’est-ce que les aqueducs lors de la période de la Rome antique et à quoi servaient-ils?", a: "Conduites d’eau qui servent à acheminer l’eau dans les villes."},
+      {q: "11- Qu’est-ce que les égouts lors de la période de la Rome antique et à quoi servaient-ils?", a: "Ce sont des conduites qui servent à drainer, évacuer les eaux usées des villes."},
+      {q: "12- Les aqueducs, les égouts, les routes et les thermes sont des infrastructures. Qu’est-ce que des infrastructures?", a: "Ensemble des équipements d’un pays ou d’une région (aqueduc, ponts, routes, etc.)."},
+      {q: "13- Lors de la Rome antique, qui sont les patriciens?", a: "Les familles riches qui ont fondé Rome."},
+      {q: "14- Lors de la Rome antique, qui sont les plébéiens?", a: "Les plébéiens forment la classe populaire de Rome, le peuple libre qui a des droits politiques."},
+      {q: "15- Quel droit les étrangers de Rome n’ont pas que les citoyens ont?", a: "Les étrangers ou pérégrins à Rome sont des étrangers libres qui vivent à Rome. Ils ne peuvent pas être propriétaires terriens."},
+      {q: "16- Nomme, en ordre décroissant, les sept groupes sociaux qui constituent la société de la Rome antique, lors de l’Empire.", a: "L’Empereur et sa famille, les patriciens, les plébéiens, les étrangers-pérégrins, les affranchis et les esclaves."},
+      {q: "17- Qu’est-ce que la Pax Romana?", a: "Période de paix dans l’Empire romain qui va durer 2 siècles : soit le I er et le II e siècle."},
+      {q: "18- Comment la ville de Rome, lors de la période impériale, fait-elle principalement pour s’enrichir?", a: "La ville de Rome s’enrichit grâce aux impôts et aux taxes que toutes les provinces (territoires) conquises doivent lui verser."},
+      {q: "19- À quoi servent (2) les routes qui sillonnent l’empire romain?", a: "Les routes servent au transport des marchandises (commerce) et aux déplacements des soldats de l’armée (défense)."},
+      {q: "20- Pour qu’elles raisons (4), l’armée romaine, lors de la période impériale, est-elle si puissante?", a: "La puissance de l’armée romaine repose sur le fait que les soldats sont des professionnels, armés par l’État, que les soldats sont disciplinés et entraînés."},
+      {q: "21- Qu’est-ce que les limes dans l’Empire romain? À quoi servent-ils?", a: "Les limes sont des murs érigés le long de certaines frontières. Ils servent à protéger le territoire romain contre les envahisseurs."},
+      {q: "22- Qu’est-ce la romanisation sous l’Empire romain? Comment Rome fait-elle pour romaniser les peuples conquis", a: "La romanisation est le fait de vouloir rendre romain. 1-Imposition de la langue latine, 2-développement d’infrastructures romaines (thermes, aqueducs, etc.), 3- présentation de divertissements romains (jeux et courses de chars au cirque) et 4- promotion de l’alimentation et de l’habillement à la romaine."},
+      {q: "23- Quelles sont les particularités (4) du droit romain tel qu’établit par les Douze tables?", a: "Les lois romaines sont particulières : 1-un accusé est innocent jusqu’à la preuve du contraire, 2-un accusé a le droit de se défendre devant un juge, 3-l’accusé et l’accusateur ont des droits égaux, 4-les jugements doivent s’appuyer sur des preuves et 5-la liberté de pensée est reconnue."},
+      {q: "24- Qui sont ceux qui vont envahir l’Empire romain au Ve siècle de notre ère?", a: "L’Empire romain d’Occident va être envahi par ceux que les Romains nomment les barbares."},
+      {q: "25- Quelles sont les raisons (2) qui expliquent la chute de l’Empire romain au Ve siècle?", a: "Le territoire de l’Empire est très vaste à défendre. Faiblesse de certains empereurs. Difficultés économiques pour Rome."}
+    ];
+
+    function FlashcardApp() {
+      const [index, setIndex] = React.useState(0);
+      const [showAnswer, setShowAnswer] = React.useState(false);
+      const [score, setScore] = React.useState(0);
+      const [attempted, setAttempted] = React.useState(0);
+
+      const current = flashcards[index];
+
+      const nextCard = () => {
+        setShowAnswer(false);
+        setIndex((prev) => (prev + 1) % flashcards.length);
+      };
+
+      const mark = (isCorrect) => {
+        setAttempted((a) => a + 1);
+        if (isCorrect) setScore((s) => s + 1);
+        nextCard();
+      };
+
+      return (
+        <div className="bg-white/70 backdrop-blur shadow-lg rounded-2xl p-6 flex flex-col gap-4">
+          <h1 className="text-2xl font-bold text-center mb-2">Cartes éclair – Rome antique</h1>
+          <div className="text-center">
+            <p className="text-lg font-medium whitespace-pre-wrap">{current.q}</p>
+            {showAnswer && <p className="mt-4 text-green-700 font-semibold whitespace-pre-wrap">{current.a}</p>}
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center mt-4">
+            {!showAnswer ? (
+              <button onClick={() => setShowAnswer(true)} className="bg-blue-600 text-white px-4 py-2 rounded-xl shadow active:scale-95 transition">Afficher la réponse</button>
+            ) : (
+              <>
+                <button onClick={() => mark(true)} className="bg-green-600 text-white px-4 py-2 rounded-xl shadow active:scale-95 transition">J'avais bon ✓</button>
+                <button onClick={() => mark(false)} className="bg-red-600 text-white px-4 py-2 rounded-xl shadow active:scale-95 transition">Je me suis trompé ✗</button>
+              </>
+            )}
+          </div>
+          <div className="text-sm text-gray-700 text-center mt-2">
+            Carte {index + 1}/{flashcards.length} — Score: {score}/{attempted}
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<FlashcardApp />);
+  </script>
+</body>
+</html>
