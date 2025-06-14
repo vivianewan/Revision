@@ -13,114 +13,130 @@
   <div id="root" class="w-full max-w-3xl"></div>
 
   <script type="text/babel">
-    /* === Jeu de 30 questions variées (MCQ, V/F, Trou) === */
+    /* === 31 questions : 30 auto + 1 développement avec bonus mots-clés === */
+    const openKeywords = [
+      "politique","pape","roi","spirituel","couronne","protège","terre","population","prière",
+      "messe","fêtes","sacrements","éducation","connaissances","arts","culture","interdiction",
+      "croisade","féodalité","pouvoir"
+    ]; // 20 mots-clés ; 1 pt par mot trouvé, max 5 pts
+
     const questions = [
       {id:1, type:'mc', q:"Quel empereur légalise le christianisme en 313 ?", choices:["Dioclétien","Constantin","Théodose I","Charlemagne"], correct:1},
       {id:2, type:'mc', q:"En 800, le pape couronne…", choices:["Charles Martel","Clovis","Charlemagne","Otton I"], correct:2},
       {id:3, type:'tf', q:"Les croisades ont permis un essor des échanges entre Occident et Orient.", correct:true},
       {id:4, type:'tf', q:"Le style gothique précède toujours le style roman.", correct:false},
-      {id:5, type:'fill', q:"En 391, le christianisme devient la religion ____ de l'Empire romain.", answer:"officielle"},
-      {id:6, type:'mc', q:"Combien de croisades majeures entre 1095 et 1270 ?", choices:["4","6","8","10"], correct:2},
-      {id:7, type:'fill', q:"Le vassal jure fidélité et ____ à son seigneur.", answer:"obéissance"},
+      {id:5, type:'fill', q:"En 391, le christianisme devient la religion __________ de l'Empire romain.", answer:"officielle"},
+      {id:6, type:'mc', q:"Combien de croisades majeures ont lieu entre 1095 et 1270 ?", choices:["4","6","8","10"], correct:2},
+      {id:7, type:'fill', q:"Le vassal jure fidélité et __________ à son seigneur.", answer:"obéissance"},
       {id:8, type:'tf', q:"Le clergé régulier correspond aux ordres monastiques.", correct:true},
       {id:9, type:'mc', q:"Quel impôt finance l'Église ?", choices:["La taille","La dîme","La gabelle","Le cens"], correct:1},
-      {id:10,type:'fill',q:"En 1095, le pape Urbain II prêche la première ____.",answer:"croisade"},
+      {id:10,type:'fill',q:"En 1095, le pape Urbain II prêche la première __________.",answer:"croisade"},
       {id:11,type:'mc',q:"Dans la féodalité, le pouvoir du roi est dit…",choices:["spirituel","temporel","absolu","éphémère"],correct:1},
       {id:12,type:'tf',q:"Les monastères jouent un rôle majeur dans l'éducation.",correct:true},
-      {id:13,type:'fill',q:"Deux styles religieux : ____ et gothique.",answer:"roman"},
+      {id:13,type:'fill',q:"Deux styles religieux : __________ et gothique.",answer:"roman"},
       {id:14,type:'mc',q:"Quel peuple prend Jérusalem en 1071 ?",choices:["Arabes","Turcs seldjoukides","Mongols","Croisés"],correct:1},
       {id:15,type:'tf',q:"La dîme est due au seigneur laïc.",correct:false},
-      {id:16,type:'fill',q:"Lieu de pèlerinage majeur en Espagne : ____.",answer:"Compostelle"},
+      {id:16,type:'fill',q:"Lieu de pèlerinage majeur en Espagne : __________.",answer:"Compostelle"},
       {id:17,type:'mc',q:"Qui dirige un diocèse ?",choices:["Prêtre","Abbesse","Évêque","Cardinal"],correct:2},
       {id:18,type:'tf',q:"Le pape possède un pouvoir temporel direct sur tous les royaumes.",correct:false},
-      {id:19,type:'fill',q:"Le château fort protège la ____ en cas d'attaque.",answer:"population"},
+      {id:19,type:'fill',q:"Le château fort protège la __________ en cas d'attaque.",answer:"population"},
       {id:20,type:'mc',q:"Le serment d'un vassal inclut :",choices:["Payer la dîme","Servir militairement","Construire une cathédrale","Prêcher"],correct:1},
       {id:21,type:'tf',q:"Les arts médiévaux sont souvent au service de l'enseignement religieux.",correct:true},
-      {id:22,type:'fill',q:"La messe dominicale rythme la ____ des fidèles.",answer:"semaine"},
+      {id:22,type:'fill',q:"La messe dominicale rythme la __________ des fidèles.",answer:"semaine"},
       {id:23,type:'mc',q:"Quelle valeur n'est PAS mise en avant chez les moines ?",choices:["Charité","Sacrifice","Opulence","Pauvreté"],correct:2},
       {id:24,type:'tf',q:"La chute de Rome affaiblit immédiatement l'influence de l'Église.",correct:false},
-      {id:25,type:'fill',q:"Les seigneurs octroient des ____ à leurs vassaux.",answer:"fiefs"},
-      {id:26,type:'mc',q:"Quel pouvoir possède le pape ?",choices:["Spirituel","Temporel","Judiciaire laïque","Fiscal"],correct:0},
+      {id:25,type:'fill',q:"Les seigneurs octroient des __________ à leurs vassaux.",answer:"fiefs"},
+      {id:26,type:'mc',q:"Quel pouvoir possède le pape ?",choices:["Spirituel","Temporel","Judiciaire laïc","Fiscal"],correct:0},
       {id:27,type:'tf',q:"Les paysans doivent accomplir des corvées pour le seigneur.",correct:true},
-      {id:28,type:'fill',q:"Les _____ seldjoukides occupent Jérusalem en 1071.",answer:"Turcs"},
+      {id:28,type:'fill',q:"Les __________ seldjoukides occupent Jérusalem en 1071.",answer:"Turcs"},
       {id:29,type:'mc',q:"Quel sacrement marque l'entrée dans la vie chrétienne ?",choices:["Baptême","Mariage","Confirmation","Eucharistie"],correct:0},
-      {id:30,type:'tf',q:"Le latin reste la langue liturgique pendant tout le Moyen Âge.",correct:true}
+      {id:30,type:'tf',q:"Le latin reste la langue liturgique pendant tout le Moyen Âge.",correct:true},
+      {id:31,type:'open',q:"Développement : Quelle est l’influence de l’Église dans l’Occident médiéval ?\n(Donne au moins trois aspects : politique, vie quotidienne, culture.)"}
     ];
 
-    function QuizApp() {
-      const [step, setStep] = React.useState(0); // 0: intro / in-progress / done
-      const [index, setIndex] = React.useState(0);
-      const [score, setScore] = React.useState(0);
-      const q = questions[index];
+    function QuizApp(){
+      const [phase,setPhase]=React.useState(0); // 0 intro / 1 quiz / 2 résultat
+      const [i,setI]=React.useState(0);
+      const [score,setScore]=React.useState(0); // auto questions
+      const [bonus,setBonus]=React.useState(0); // points mots‑clés
+      const [essay,setEssay]=React.useState("");
 
-      const handleAnswer = (isCorrect) => {
-        if (isCorrect) setScore((s) => s + 1);
-        if (index + 1 < questions.length) {
-          setIndex(index + 1);
-        } else {
-          setStep(2);
+      const autoTotal = questions.filter(q=>q.type!=="open").length;
+      const totalPossible = autoTotal + 5; // 5 pts max bonus
+
+      const current = questions[i];
+
+      const next=(isCorrect)=>{
+        if(isCorrect!==null){
+          if(isCorrect) setScore(s=>s+1);
+        }
+        if(i+1<questions.length){
+          setI(idx=>idx+1);
+        }else{
+          setPhase(2);
         }
       };
 
-      if (step === 0) {
-        return (
-          <div className="bg-white/80 p-8 rounded-2xl shadow-lg text-center space-y-4">
-            <h1 className="text-2xl font-bold">Quiz – Influence de l'Église médiévale</h1>
-            <p>{questions.length} questions variées (MCQ, vrai / faux, trou).</p>
-            <button onClick={() => setStep(1)} className="bg-indigo-600 text-white px-4 py-2 rounded-xl shadow">Commencer</button>
-          </div>
-        );
+      if(phase===0){
+        return (<Intro start={()=>setPhase(1)} />);
       }
 
-      if (step === 2) {
-        return (
-          <div className="bg-white/80 p-8 rounded-2xl shadow-lg text-center space-y-4">
-            <h1 className="text-2xl font-bold">Résultat</h1>
-            <p className="text-xl">{score} / {questions.length} bonnes réponses</p>
-            <button onClick={() => {setIndex(0);setScore(0);setStep(1);}} className="bg-green-600 text-white px-4 py-2 rounded-xl">Rejouer</button>
-          </div>
-        );
+      if(phase===2){
+        return (<Result score={score} bonus={bonus} total={totalPossible} essay={essay} restart={()=>{setI(0);setScore(0);setBonus(0);setEssay("");setPhase(1);}} />);
       }
 
-      /* rendu de la question courante */
+      return (<QuestionCard q={current} idx={i} total={questions.length} next={next} setEssay={setEssay} setBonus={setBonus} />);
+    }
+
+    const Intro=({start})=>(
+      <div className="bg-white/80 p-8 rounded-2xl shadow-lg text-center space-y-4">
+        <h1 className="text-2xl font-bold">Quiz – Influence de l'Église médiévale</h1>
+        <p>30 questions auto‑corrigées + 1 développement (bonus jusqu'à 5 pts).</p>
+        <button onClick={start} className="bg-indigo-600 text-white px-4 py-2 rounded-xl shadow">Commencer</button>
+      </div>
+    );
+
+    function Result({score,bonus,total,essay,restart}){
       return (
-        <div className="bg-white/80 p-8 rounded-2xl shadow-lg space-y-6 w-full">
-          <div className="text-sm text-right">Question {index+1}/{questions.length}</div>
+        <div className="bg-white/80 p-8 rounded-2xl shadow-lg space-y-4">
+          <h2 className="text-2xl font-bold text-center">Résultat</h2>
+          <p className="text-center text-xl">{score}+{bonus} bonus = {score+bonus} / {total}</p>
+          {essay && (<div className="bg-slate-100 p-4 rounded-xl max-h-64 overflow-auto">
+            <h3 className="font-semibold mb-2">Ta réponse :</h3>
+            <pre className="whitespace-pre-wrap text-sm">{essay}</pre>
+          </div>)}
+          <button onClick={restart} className="block mx-auto bg-green-600 text-white px-4 py-2 rounded-xl">Rejouer</button>
+        </div>
+      );
+    }
+
+    function QuestionCard({q,idx,total,next,setEssay,setBonus}){
+      return (
+        <div className="bg-white/80 p-8 rounded-2xl shadow-lg space-y-6">
+          <div className="text-sm text-right">Question {idx+1}/{total}</div>
           <h2 className="text-lg font-semibold whitespace-pre-wrap">{q.q}</h2>
-          {q.type==='mc' && (
-            <div className="flex flex-col gap-3 mt-4">
-              {q.choices.map((choice,i)=>(
-                <button key={i} onClick={()=>handleAnswer(i===q.correct)} className="border rounded-lg px-4 py-2 hover:bg-indigo-100 text-left">{String.fromCharCode(97+i)}) {choice}</button>
-              ))}
-            </div>
-          )}
+
+          {q.type==='mc' && q.choices.map((c,i)=>(
+            <button key={i} onClick={()=>next(i===q.correct)} className="w-full text-left border rounded-lg px-4 py-2 hover:bg-indigo-100">{String.fromCharCode(97+i)}) {c}</button>
+          ))}
+
           {q.type==='tf' && (
-            <div className="flex gap-3 mt-4 justify-center">
-              <button onClick={()=>handleAnswer(true===q.correct)} className="bg-green-600 text-white px-6 py-2 rounded-xl">Vrai</button>
-              <button onClick={()=>handleAnswer(false===q.correct)} className="bg-red-600 text-white px-6 py-2 rounded-xl">Faux</button>
+            <div className="flex gap-3 justify-center">
+              <button onClick={()=>next(q.correct===true)} className="bg-green-600 text-white px-6 py-2 rounded-xl">Vrai</button>
+              <button onClick={()=>next(q.correct===false)} className="bg-red-600 text-white px-6 py-2 rounded-xl">Faux</button>
             </div>
           )}
-          {q.type==='fill' && (
-            <FillQuestion q={q} onSubmit={handleAnswer} />
-          )}
+
+          {q.type==='fill' && <Fill q={q} next={next} />}
+
+          {q.type==='open' && <Open q={q} next={next} setEssay={setEssay} setBonus={setBonus} />}
         </div>
       );
     }
 
-    function FillQuestion({q, onSubmit}) {
-      const [value,setValue]=React.useState("");
-      const check=()=>{
-        onSubmit(value.trim().toLowerCase()===q.answer.toLowerCase());
-      };
+    function Fill({q,next}){
+      const [v,setV]=React.useState("");
       return (
-        <div className="mt-4 flex flex-col items-center gap-3">
-          <input value={value} onChange={e=>setValue(e.target.value)} placeholder="Votre réponse" className="border px-4 py-2 rounded-lg w-64 text-center" />
-          <button onClick={check} className="bg-indigo-600 text-white px-4 py-2 rounded-xl">Valider</button>
-        </div>
-      );
-    }
-
-    ReactDOM.createRoot(document.getElementById('root')).render(<QuizApp />);
-  </script>
-</body>
-</html>
+        <div className="flex flex-col items-center gap-3 mt-4">
+          <input value={v} onChange={e=>setV(e.target.value)} className="border px-4 py-2 rounded-lg w-64 text-center" placeholder="Votre réponse" />
+          <button onClick={()=>next(v.trim().toLowerCase()===q.answer.toLowerCase())} className="bg-indigo-600 text-white px-4 py-2 rounded-xl">Valider</
