@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz – Influence de l'Église médiévale</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-rose-100 min-h-screen flex items-center justify-center p-4">
+  <div id="root" class="w-full max-w-3xl"></div>
+
+  <script type="text/babel">
+    /* === Jeu de 30 questions variées (MCQ, V/F, Trou) === */
+    const questions = [
+      {id:1, type:'mc', q:"Quel empereur légalise le christianisme en 313 ?", choices:["Dioclétien","Constantin","Théodose I","Charlemagne"], correct:1},
+      {id:2, type:'mc', q:"En 800, le pape couronne…", choices:["Charles Martel","Clovis","Charlemagne","Otton I"], correct:2},
+      {id:3, type:'tf', q:"Les croisades ont permis un essor des échanges entre Occident et Orient.", correct:true},
+      {id:4, type:'tf', q:"Le style gothique précède toujours le style roman.", correct:false},
+      {id:5, type:'fill', q:"En 391, le christianisme devient la religion ____ de l'Empire romain.", answer:"officielle"},
+      {id:6, type:'mc', q:"Combien de croisades majeures entre 1095 et 1270 ?", choices:["4","6","8","10"], correct:2},
+      {id:7, type:'fill', q:"Le vassal jure fidélité et ____ à son seigneur.", answer:"obéissance"},
+      {id:8, type:'tf', q:"Le clergé régulier correspond aux ordres monastiques.", correct:true},
+      {id:9, type:'mc', q:"Quel impôt finance l'Église ?", choices:["La taille","La dîme","La gabelle","Le cens"], correct:1},
+      {id:10,type:'fill',q:"En 1095, le pape Urbain II prêche la première ____.",answer:"croisade"},
+      {id:11,type:'mc',q:"Dans la féodalité, le pouvoir du roi est dit…",choices:["spirituel","temporel","absolu","éphémère"],correct:1},
+      {id:12,type:'tf',q:"Les monastères jouent un rôle majeur dans l'éducation.",correct:true},
+      {id:13,type:'fill',q:"Deux styles religieux : ____ et gothique.",answer:"roman"},
+      {id:14,type:'mc',q:"Quel peuple prend Jérusalem en 1071 ?",choices:["Arabes","Turcs seldjoukides","Mongols","Croisés"],correct:1},
+      {id:15,type:'tf',q:"La dîme est due au seigneur laïc.",correct:false},
+      {id:16,type:'fill',q:"Lieu de pèlerinage majeur en Espagne : ____.",answer:"Compostelle"},
+      {id:17,type:'mc',q:"Qui dirige un diocèse ?",choices:["Prêtre","Abbesse","Évêque","Cardinal"],correct:2},
+      {id:18,type:'tf',q:"Le pape possède un pouvoir temporel direct sur tous les royaumes.",correct:false},
+      {id:19,type:'fill',q:"Le château fort protège la ____ en cas d'attaque.",answer:"population"},
+      {id:20,type:'mc',q:"Le serment d'un vassal inclut :",choices:["Payer la dîme","Servir militairement","Construire une cathédrale","Prêcher"],correct:1},
+      {id:21,type:'tf',q:"Les arts médiévaux sont souvent au service de l'enseignement religieux.",correct:true},
+      {id:22,type:'fill',q:"La messe dominicale rythme la ____ des fidèles.",answer:"semaine"},
+      {id:23,type:'mc',q:"Quelle valeur n'est PAS mise en avant chez les moines ?",choices:["Charité","Sacrifice","Opulence","Pauvreté"],correct:2},
+      {id:24,type:'tf',q:"La chute de Rome affaiblit immédiatement l'influence de l'Église.",correct:false},
+      {id:25,type:'fill',q:"Les seigneurs octroient des ____ à leurs vassaux.",answer:"fiefs"},
+      {id:26,type:'mc',q:"Quel pouvoir possède le pape ?",choices:["Spirituel","Temporel","Judiciaire laïque","Fiscal"],correct:0},
+      {id:27,type:'tf',q:"Les paysans doivent accomplir des corvées pour le seigneur.",correct:true},
+      {id:28,type:'fill',q:"Les _____ seldjoukides occupent Jérusalem en 1071.",answer:"Turcs"},
+      {id:29,type:'mc',q:"Quel sacrement marque l'entrée dans la vie chrétienne ?",choices:["Baptême","Mariage","Confirmation","Eucharistie"],correct:0},
+      {id:30,type:'tf',q:"Le latin reste la langue liturgique pendant tout le Moyen Âge.",correct:true}
+    ];
+
+    function QuizApp() {
+      const [step, setStep] = React.useState(0); // 0: intro / in-progress / done
+      const [index, setIndex] = React.useState(0);
+      const [score, setScore] = React.useState(0);
+      const q = questions[index];
+
+      const handleAnswer = (isCorrect) => {
+        if (isCorrect) setScore((s) => s + 1);
+        if (index + 1 < questions.length) {
+          setIndex(index + 1);
+        } else {
+          setStep(2);
+        }
+      };
+
+      if (step === 0) {
+        return (
+          <div className="bg-white/80 p-8 rounded-2xl shadow-lg text-center space-y-4">
+            <h1 className="text-2xl font-bold">Quiz – Influence de l'Église médiévale</h1>
+            <p>{questions.length} questions variées (MCQ, vrai / faux, trou).</p>
+            <button onClick={() => setStep(1)} className="bg-indigo-600 text-white px-4 py-2 rounded-xl shadow">Commencer</button>
+          </div>
+        );
+      }
+
+      if (step === 2) {
+        return (
+          <div className="bg-white/80 p-8 rounded-2xl shadow-lg text-center space-y-4">
+            <h1 className="text-2xl font-bold">Résultat</h1>
+            <p className="text-xl">{score} / {questions.length} bonnes réponses</p>
+            <button onClick={() => {setIndex(0);setScore(0);setStep(1);}} className="bg-green-600 text-white px-4 py-2 rounded-xl">Rejouer</button>
+          </div>
+        );
+      }
+
+      /* rendu de la question courante */
+      return (
+        <div className="bg-white/80 p-8 rounded-2xl shadow-lg space-y-6 w-full">
+          <div className="text-sm text-right">Question {index+1}/{questions.length}</div>
+          <h2 className="text-lg font-semibold whitespace-pre-wrap">{q.q}</h2>
+          {q.type==='mc' && (
+            <div className="flex flex-col gap-3 mt-4">
+              {q.choices.map((choice,i)=>(
+                <button key={i} onClick={()=>handleAnswer(i===q.correct)} className="border rounded-lg px-4 py-2 hover:bg-indigo-100 text-left">{String.fromCharCode(97+i)}) {choice}</button>
+              ))}
+            </div>
+          )}
+          {q.type==='tf' && (
+            <div className="flex gap-3 mt-4 justify-center">
+              <button onClick={()=>handleAnswer(true===q.correct)} className="bg-green-600 text-white px-6 py-2 rounded-xl">Vrai</button>
+              <button onClick={()=>handleAnswer(false===q.correct)} className="bg-red-600 text-white px-6 py-2 rounded-xl">Faux</button>
+            </div>
+          )}
+          {q.type==='fill' && (
+            <FillQuestion q={q} onSubmit={handleAnswer} />
+          )}
+        </div>
+      );
+    }
+
+    function FillQuestion({q, onSubmit}) {
+      const [value,setValue]=React.useState("");
+      const check=()=>{
+        onSubmit(value.trim().toLowerCase()===q.answer.toLowerCase());
+      };
+      return (
+        <div className="mt-4 flex flex-col items-center gap-3">
+          <input value={value} onChange={e=>setValue(e.target.value)} placeholder="Votre réponse" className="border px-4 py-2 rounded-lg w-64 text-center" />
+          <button onClick={check} className="bg-indigo-600 text-white px-4 py-2 rounded-xl">Valider</button>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<QuizApp />);
+  </script>
+</body>
+</html>
