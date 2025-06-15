@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lecture – Exercices CE / CI / I</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-amber-100 min-h-screen flex items-center justify-center p-4">
+  <div id="root" class="w-full max-w-4xl"></div>
+
+  <script type="text/babel">
+    // ================== DONNÉES =======================
+    const EXTRACTS = [
+      {
+        id:1,
+        source:"Extrait 1 (création)",
+        text:`Le train entra en gare à l’aube. Pauline descendit sur le quai désert ; elle serra contre elle la valise usée qui contenait toute sa vie. Devant la verrière embuée, un vieil homme agitait un journal froissé. Soudain, un chien noir jaillit d’un wagon et emporta la casquette du chef de gare ; Pauline éclata de rire. Au même instant, le vieil homme tourna la tête et croisa son regard. Un sourire de reconnaissance se dessina sur leurs visages.`,
+        questions:[
+          {id:"q1",type:"ce",q:"Où Pauline descend-elle du train ?",answer:"sur le quai"},
+          {id:"q2",type:"ce",q:"Que tient-elle serré contre elle ?",answer:"valise"},
+          {id:"q3",type:"ci",q:"Quel est le lien probable entre Pauline et le vieil homme ?",answer:"Ils se connaissent / parenté"},
+          {id:"q4",type:"i",q:"Pourquoi Pauline rit-elle quand le chien vole la casquette ? Donne 2 indices.",answer:"tension retombe / scène comique / inquiétude"}
+        ]
+      },
+      {
+        id:2,
+        source:"Extrait 2 (création)",
+        text:`Depuis ce jour-là, Hugo gravit chaque soir le vieux clocher pour allumer la lanterne rouge. Pourtant, ce mardi d’orage, il hésita ; des éclairs déchiraient le ciel. Bien qu’il fût trempé, il continua l’ascension, comme s’il suivait un devoir invisible. Arrivé au sommet, il découvrit une lettre glissée sous la lampe ; quelques mots : « Merci… reviens demain ».`,
+        questions:[
+          {id:"q1",type:"ce",q:"Quelle tâche Hugo accomplit-il chaque soir ?",answer:"allumer la lanterne"},
+          {id:"q2",type:"ce",q:"Quelle est la couleur de la lanterne ?",answer:"rouge"},
+          {id:"q3",type:"ci",q:"Pourquoi hésite‑t‑il ce soir‑là ?",answer:"orage / éclairs"},
+          {id:"q4",type:"i",q:"Qui a laissé la lettre, selon toi ? Justifie avec 2 indices.",answer:"personne aidée / devoir invisible"}
+        ]
+      },
+      {
+        id:3,
+        source:"Extrait 3 (création)",
+        text:`Il y a de cela très longtemps, au cours du XXᵉ siècle, Lina inventa une machine à écouter les rêves. Quelques mois plus tard, des savants, d’un autre côté, déclarèrent l’appareil impossible ; néanmoins, Lina persista. Le lendemain de sa première démonstration publique, tous les journaux titrèrent : « Une voix dans la nuit ! ». Contrairement aux sceptiques, la foule acclamait la jeune ingénieure.`,
+        questions:[
+          {id:"q1",type:"ce",q:"Que permet la machine de Lina ?",answer:"écouter les rêves"},
+          {id:"q2",type:"ce",q:"Comment réagit la foule ?",answer:"acclame"},
+          {id:"q3",type:"ci",q:"Pourquoi les savants déclarent‑ils l’appareil impossible ?",answer:"irréaliste / technologie"},
+          {id:"q4",type:"i",q:"Lina convaincra‑t‑elle le monde scientifique ? Justifie avec 2 éléments.",answer:"succès public / journaux"}
+        ]
+      }
+    ];
+
+    // ==================================================
+
+    function shuffle(arr){return arr.sort(()=>Math.random()-0.5);}
+
+    function App(){
+      const [extract,setExtract]=React.useState(()=>shuffle(EXTRACTS)[0]);
+      const [inputs,setInputs]=React.useState({});
+      const [show,setShow]=React.useState(false);
+
+      const handleChange=(qid,val)=>setInputs(prev=>({...prev,[qid]:val}));
+
+      const reset=()=>{const newEx=shuffle(EXTRACTS)[0];setExtract(newEx);setInputs({});setShow(false);} ;
+
+      return (
+        <div className="bg-white/80 p-8 rounded-2xl shadow-lg space-y-6 max-h-[92vh] overflow-auto">
+          <h1 className="text-2xl font-bold text-center">Exercice de lecture – CE / CI / I</h1>
+          <p className="text-center text-sm italic">{extract.source}</p>
+          <blockquote className="italic bg-orange-50 p-4 rounded-lg whitespace-pre-wrap leading-relaxed">{extract.text}</blockquote>
+
+          <div className="space-y-4">
+            {extract.questions.map((q,i)=>(
+              <div key={q.id} className="space-y-1">
+                <p className="font-medium">{i+1}. ({q.type.toUpperCase()}) {q.q}</p>
+                <textarea rows="2" className="w-full border rounded p-2 text-sm" value={inputs[q.id]||""} onChange={e=>handleChange(q.id,e.target.value)} disabled={show}></textarea>
+                {show && (
+                  <p className="text-sm text-gray-700"><span className="font-semibold">Corrigé :</span> {q.answer}</p>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {!show ? (
+            <button onClick={()=>setShow(true)} className="bg-indigo-600 text-white px-4 py-2 rounded-xl block mx-auto">Afficher le corrigé</button>
+          ) : (
+            <button onClick={reset} className="bg-green-600 text-white px-4 py-2 rounded-xl block mx-auto">Nouvel extrait aléatoire</button>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+  </script>
+</body>
+</html>
