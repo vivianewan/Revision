@@ -14,9 +14,12 @@
 
   <script type="text/babel">
 /*******************************************************
- *  Extraits littéraires (domaine public) enrichis      *
- *  Organisateurs limité aux listes fournies :          *
- *  Temps / Opposition / Concession / Comparaison       *
+ *  Extraits littéraires (domaine public)               *
+ *  Organisateurs LIMITÉS aux notes fournies :          *
+ *  - Temps                                             *
+ *  - Opposition                                        *
+ *  - Concession                                        *
+ *  - Comparaison                                       *
  *******************************************************/
 
 const CATEGORIES = [
@@ -26,106 +29,88 @@ const CATEGORIES = [
   {key:"comparaison", label:"Comparaison"}
 ];
 
-// Helpers to make sure we only tag words exactly once by lowercasing
-function addEntry(source,text,tags){BANK.push({source,text,tags});}
-
-const BANK=[];
-
-// Anciens extraits (mis à jour si besoin)
-addEntry("Victor Hugo – Les Misérables","Il pleuvait depuis l'aube; pourtant, Jean Valjean marchait d'un pas ferme, puis il pressa l'allure, comme s'il voulait semer les souvenirs amers qui le poursuivaient.",[
-  {word:"pourtant",cat:"opposition"},
-  {word:"puis",cat:"temps"},
-  {word:"comme",cat:"comparaison"}
-]);
-
-addEntry("Jules Verne – Le Tour du monde en 80 jours","Le lendemain, Phileas Fogg consulta sa montre; ensuite, il referma son carnet; bien que les retards se multiplient, il demeurait imperturbable.",[
-  {word:"le lendemain",cat:"temps"},
-  {word:"ensuite",cat:"temps"},
-  {word:"bien que",cat:"concession"}
-]);
-
-addEntry("George Sand – La Mare au Diable","Au début, la nuit tombait doucement; cependant, les moissonneurs chantaient encore, à la différence de leurs chevaux qui se reposaient déjà.",[
-  {word:"Au début",cat:"temps"},
-  {word:"cependant",cat:"opposition"},
-  {word:"à la différence de",cat:"comparaison"}
-]);
-
-addEntry("Alphonse Daudet – Lettres de mon moulin","Quelques mois plus tard, le mistral hurlait au-dessus des pins; néanmoins, la petite chèvre de Monsieur Seguin restait fière, puis elle escalada la montagne.",[
-  {word:"Quelques mois plus tard",cat:"temps"},
-  {word:"néanmoins",cat:"opposition"},
-  {word:"puis",cat:"temps"}
-]);
-
-addEntry("Stendhal – Le Rouge et le Noir","Bien que le salon fût rempli de monde, Julien se sentait seul; plus tard, il s'approcha de la fenêtre; alors que la musique retentissait, il resta pensif.",[
-  {word:"Bien que",cat:"concession"},
-  {word:"plus tard",cat:"temps"},
-  {word:"alors que",cat:"opposition"}
-]);
-
-addEntry("Guy de Maupassant – Contes de la Bécasse","Il était déjà tard; pourtant ils continuaient leur marche, comme si la fatigue ne les atteignait jamais; d'autre part, la lune éclairait leur sentier.",[
-  {word:"pourtant",cat:"opposition"},
-  {word:"comme",cat:"comparaison"},
-  {word:"d'autre part",cat:"opposition"}
-]);
-
-addEntry("Émile Zola – Germinal","Depuis ce jour‑là, Étienne avançait dans la galerie; tandis que ses camarades parlaient, il restait silencieux.",[
-  {word:"Depuis ce jour-là",cat:"temps"},
-  {word:"tandis que",cat:"opposition"}
-]);
-
-addEntry("Marcel Proust – Du côté de chez Swann","Il demeura longtemps immobile; pourtant, son esprit vagabondait; bien que la cloche eût sonné, il ne bougea pas; par ailleurs, personne ne le pressa.",[
-  {word:"pourtant",cat:"opposition"},
-  {word:"bien que",cat:"concession"},
-  {word:"par ailleurs",cat:"opposition"}
-]);
-
-// Nouveaux extraits pour couvrir plus de connecteurs
-addEntry("Alexandre Dumas – Les Trois Mousquetaires","Au cours du XIXe siècle, d'Artagnan quitta sa Gascogne; toutefois, il ne renonça pas à son accent; par contre, il gagna en bravoure.",[
-  {word:"Au cours du XIXe siècle",cat:"temps"},
-  {word:"toutefois",cat:"opposition"},
-  {word:"par contre",cat:"opposition"}
-]);
-
-addEntry("Honoré de Balzac – Le Père Goriot","En 1834, Rastignac contemplait Paris; certes, il manquait d'argent, mais il nourrissait de grandes ambitions.",[
-  {word:"En 1834",cat:"temps"},
-  {word:"certes",cat:"opposition"},
-  {word:"mais",cat:"opposition"}
-]);
-
-addEntry("Colette – Claudine à l'école","Il y a de cela très longtemps, Claudine observait la cour; au contraire, ses camarades jouaient bruyamment.",[
-  {word:"Il y a de cela très longtemps",cat:"temps"},
-  {word:"au contraire",cat:"opposition"}
-]);
-
-addEntry("Jules Renard – Poil de Carotte","De nos jours, on se souvient encore de Poil de Carotte; néanmoins, peu comprennent vraiment sa solitude.",[
-  {word:"De nos jours",cat:"temps"},
-  {word:"néanmoins",cat:"opposition"}
-]);
-
-addEntry("Alphonse de Lamartine – Méditations","En 1967, nul ne parlait encore d'Internet; pourtant, les poètes rêvaient déjà d'éternité.",[
-  {word:"En 1967",cat:"temps"},
-  {word:"pourtant",cat:"opposition"}
-]);
-
-addEntry("Romain Rolland – Jean‑Christophe","Au début, la rivière semblait calme; d'un autre côté, le ciel menaçait d'orage.",[
-  {word:"Au début",cat:"temps"},
-  {word:"d'un autre côté",cat:"opposition"}
-]);
+const BANK = [
+  {
+    source:"Victor Hugo – Les Misérables",
+    text:"Il pleuvait depuis l'aube; pourtant, Jean Valjean marchait d'un pas ferme, puis il pressa l'allure, comme s'il voulait semer les souvenirs amers qui le poursuivaient." ,
+    tags:[
+      {word:"pourtant",cat:"opposition"},
+      {word:"puis",cat:"temps"},
+      {word:"comme",cat:"comparaison"}
+    ]
+  },
+  {
+    source:"Jules Verne – Le Tour du monde en 80 jours",
+    text:"Phileas Fogg consulta sa montre, ensuite il referma son carnet; bien que les retards se multiplient, il demeurait imperturbable." ,
+    tags:[
+      {word:"ensuite",cat:"temps"},
+      {word:"bien que",cat:"concession"}
+    ]
+  },
+  {
+    source:"George Sand – La Mare au Diable",
+    text:"La nuit tombait doucement; cependant, les moissonneurs chantaient encore, à la différence de leurs chevaux qui se reposaient déjà." ,
+    tags:[
+      {word:"cependant",cat:"opposition"},
+      {word:"à la différence de",cat:"comparaison"}
+    ]
+  },
+  {
+    source:"Alphonse Daudet – Lettres de mon moulin",
+    text:"Le mistral hurlait au-dessus des pins; néanmoins, la petite chèvre de Monsieur Seguin restait fière, puis elle escalada la montagne." ,
+    tags:[
+      {word:"néanmoins",cat:"opposition"},
+      {word:"puis",cat:"temps"}
+    ]
+  },
+  {
+    source:"Stendhal – Le Rouge et le Noir",
+    text:"Bien que le salon fût rempli de monde, Julien se sentait seul; plus tard, il s'approcha de la fenêtre." ,
+    tags:[
+      {word:"Bien que",cat:"concession"},
+      {word:"plus tard",cat:"temps"}
+    ]
+  },
+  {
+    source:"Guy de Maupassant – Contes de la Bécasse",
+    text:"Il était déjà tard; pourtant ils continuaient leur marche, comme si la fatigue ne les atteignait jamais." ,
+    tags:[
+      {word:"pourtant",cat:"opposition"},
+      {word:"comme",cat:"comparaison"}
+    ]
+  },
+  {
+    source:"Émile Zola – Germinal",
+    text:"Étienne avançait dans la galerie; tandis que ses camarades parlaient, il restait silencieux." ,
+    tags:[
+      {word:"tandis que",cat:"temps"}
+    ]
+  },
+  {
+    source:"Marcel Proust – Du côté de chez Swann",
+    text:"Il demeura longtemps immobile; pourtant, son esprit vagabondait; bien que la cloche eût sonné, il ne bougea pas." ,
+    tags:[
+      {word:"pourtant",cat:"opposition"},
+      {word:"bien que",cat:"concession"}
+    ]
+  }
+];
 
 function randomParagraph(){return BANK[Math.floor(Math.random()*BANK.length)];}
 
 function splitWithTags(text,tags){
-  const segs=[]; let pos=0;
+  const segments=[];
+  let pos=0;
   tags.forEach((t,idx)=>{
-    const m=text.toLowerCase().indexOf(t.word.toLowerCase(),pos);
-    if(m!==-1){
-      segs.push({str:text.slice(pos,m), tag:null});
-      segs.push({str:t.word, tag:idx});
-      pos=m+t.word.length;
+    const match=text.toLowerCase().indexOf(t.word.toLowerCase(),pos);
+    if(match!==-1){
+      segments.push({str:text.slice(pos,match), tag:null});
+      segments.push({str:t.word, tag:idx});
+      pos=match+t.word.length;
     }
   });
-  segs.push({str:text.slice(pos), tag:null});
-  return segs;
+  segments.push({str:text.slice(pos), tag:null});
+  return segments;
 }
 
 function App(){
@@ -134,23 +119,26 @@ function App(){
   const [checked,setChecked]=React.useState(false);
 
   const refresh=()=>{const p=randomParagraph();setPara(p);setChoices(Array(p.tags.length).fill(""));setChecked(false);} ;
-  const score=para.tags.reduce((s,t,i)=>s+(choices[i]===t.cat?1:0),0);
-  const segments=React.useMemo(()=>splitWithTags(para.text,para.tags),[para]);
+
+  const score = para.tags.reduce((s,t,i)=>s+(choices[i]===t.cat?1:0),0);
+
+  const segments = React.useMemo(()=>splitWithTags(para.text,para.tags),[para]);
 
   return (
     <div className="bg-white/80 backdrop-blur p-6 rounded-2xl shadow-lg space-y-6 max-h-[90vh] overflow-auto">
       <h1 className="text-xl font-bold text-center">Organisateurs textuels</h1>
       <p className="text-center text-sm italic">{para.source}</p>
+
       <p className="leading-relaxed text-justify">
-        {segments.map((seg,i)=>{
-          if(seg.tag===null) return <span key={i}>{seg.str}</span>;
-          const corr=choices[seg.tag]===para.tags[seg.tag].cat;
+        {segments.map((seg,idx)=>{
+          if(seg.tag===null) return <span key={idx}>{seg.str}</span>;
+          const correct = choices[seg.tag]===para.tags[seg.tag].cat;
           return (
-            <span key={i} className="inline-flex items-center mx-1">
+            <span key={idx} className="inline-flex items-center mx-1">
               <select
                 value={choices[seg.tag]}
-                onChange={e=>{const c=[...choices];c[seg.tag]=e.target.value;setChoices(c);}}
-                className={`border rounded px-1 text-xs ${checked?(corr?'border-green-500':'border-red-500'):''}`}
+                onChange={e=>{const arr=[...choices];arr[seg.tag]=e.target.value;setChoices(arr);}}
+                className={`border rounded px-1 text-xs ${checked ? (correct? 'border-green-500':'border-red-500') : ''}`}
               >
                 <option value="" disabled>---</option>
                 {CATEGORIES.map(c=> <option key={c.key} value={c.key}>{c.label}</option>)}
@@ -160,7 +148,20 @@ function App(){
           );
         })}
       </p>
+
       {!checked ? (
         <button onClick={()=>setChecked(true)} className="bg-indigo-600 text-white px-4 py-2 rounded-xl block mx-auto">Vérifier</button>
       ) : (
         <div className="text-center space-y-4">
+          <p className="text-lg font-semibold">Score : {score} / {para.tags.length}</p>
+          <button onClick={refresh} className="bg-green-600 text-white px-4 py-2 rounded-xl">Nouvel extrait</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+  </script>
+</body>
+</html>
