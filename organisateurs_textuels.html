@@ -3,87 +3,114 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Organisateurs textuels – Générateur 100 exercices</title>
+  <title>Organisateurs textuels – Générateur d'exercices</title>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gradient-to-br from-yellow-50 to-rose-100 min-h-screen flex items-center justify-center p-4">
-  <div id="root" class="w-full max-w-4xl"></div>
+  <div id="root" class="w-full max-w-5xl"></div>
 
   <script type="text/babel">
     ////////////////////////////////////////////////////////////////
-    //           Générateur de 100 exercices aléatoires            //
+    //      Générateur – Choix par thème + 100 variantes          //
     ////////////////////////////////////////////////////////////////
 
     const CONNECTEURS = {
-      temps:        ["Puis", "Ensuite", "Plus tard", "Dès lors", "Finalement", "Auparavant"],
-      opposition:   ["mais", "cependant", "toutefois", "en revanche", "pourtant"],
-      comparaison:  ["comme", "ainsi que", "tel", "de même que"],
-      concession:   ["Bien que", "Quoique", "Même si", "Malgré", "En dépit de"]
+      temps:        ["puis", "ensuite", "plus tard", "dès lors", "finalement", "auparavant", "pendant que", "tandis que"],
+      opposition:   ["mais", "cependant", "toutefois", "en revanche", "pourtant", "par contre", "or"],
+      comparaison:  ["comme", "ainsi que", "tel", "de même que", "autant que", "plus… que", "moins… que"],
+      concession:   ["bien que", "quoique", "même si", "malgré", "en dépit de", "toutefois que"]
     };
 
+    // gabarits : {cat, before, after, upper?} upper=true => capitaliser automatiquement le connecteur
     const TEMPLATES = [
-      {cat:"temps", parts:["Il prit son petit-déjeuner. "," ____, il sortit travailler."]},
-      {cat:"opposition",parts:["Il est très intelligent, ",", il manque parfois de méthode."]},
-      {cat:"comparaison",parts:["Elle danse "," une ballerine."]},
-      {cat:"concession",parts:[" ____, il faisait très froid, nous avons continué la randonnée.",""]},
-      {cat:"opposition",parts:["Le premier exercice était facile ; ",", le second était beaucoup plus difficile."]},
-      {cat:"temps",parts:["Nous avons visité le musée et "," nous sommes allés au parc."]},
-      {cat:"comparaison",parts:["Il court "," le vent."]},
-      {cat:"concession",parts:[" ____, il soit tard, elle continue de lire.",""]},
-      {cat:"temps",parts:["D'abord il pleuvait ; "," le soleil est revenu."]},
-      {cat:"opposition",parts:["Il a travaillé dur ; ",", ses résultats restent médiocres."]}
+      // TEMPS
+      {cat:"temps",before:"Il se leva très tôt. ", after:" il prépara le petit-déjeuner.", upper:true},
+      {cat:"temps",before:"La cloche sonna ; ", after:" les élèves quittèrent la classe.", upper:false},
+      {cat:"temps",before:"Ils ont attendu une heure et ", after:" le bus est finalement arrivé.", upper:false},
+      {cat:"temps",before:" ____, la pluie s'arrêta et nous sortîmes.", after:"", upper:true},
+      // OPPOSITION
+      {cat:"opposition",before:"Il voulait venir, ", after:" il n'avait pas de billet.", upper:false},
+      {cat:"opposition",before:"Le film est long ; ", after:" il est passionnant.", upper:false},
+      {cat:"opposition",before:"L'hôtel est luxueux, ", after:" il est très cher.", upper:false},
+      // COMPARAISON
+      {cat:"comparaison",before:"Elle chante ", after:" un rossignol.", upper:false},
+      {cat:"comparaison",before:"Il travaille ", after:" son frère.", upper:false},
+      {cat:"comparaison",before:"Le deuxième chapitre est ", after:" le premier.", upper:false},
+      // CONCESSION
+      {cat:"concession",before:" ____, il fasse froid, ils ont dîné en terrasse.", after:"", upper:true},
+      {cat:"concession",before:"Ils ont gagné le match, ", after:" ils étaient fatigués.", upper:false},
+      {cat:"concession",before:" ____, ses conseils étaient utiles, il ne fut pas écouté.", after:"", upper:true}
     ];
 
     const rand = arr => arr[Math.floor(Math.random()*arr.length)];
 
-    // Génère n items (template + connector) puis mélange
-    function buildExercises(n=100){
+    function buildExercises(n, theme){
       const list=[];
       for(let i=0;i<n;i++){
-        const tpl = rand(TEMPLATES);
+        let tpl;
+        // filtre par thème si choisi
+        const pool = theme==='mixte'?TEMPLATES:TEMPLATES.filter(t=>t.cat===theme);
+        tpl = rand(pool);
         const conn = rand(CONNECTEURS[tpl.cat]);
-        list.push({tpl,connector:conn});
+        list.push({tpl,connector: tpl.upper? conn.charAt(0).toUpperCase()+conn.slice(1) : conn});
       }
-      // shuffle
-      for(let i=list.length-1;i>0;i--){const j=Math.floor(Math.random()* (i+1)); [list[i],list[j]]=[list[j],list[i]];}
+      // shuffle Fisher–Yates
+      for(let i=list.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [list[i],list[j]]=[list[j],list[i]];}
       return list;
     }
 
     function App(){
-      const [items,setItems]=React.useState(buildExercises());
+      const [theme,setTheme] = React.useState('mixte');
+      const [items,setItems] = React.useState(buildExercises(100,'mixte'));
       const [inputs,setInputs]=React.useState(Array(100).fill(""));
-      const [showScore,setShow]=React.useState(false);
+      const [show,setShow]   = React.useState(false);
 
-      const handleInput=(i,val)=>{const c=[...inputs];c[i]=val;setInputs(c);} ;
+      const handleInput=(i,v)=>{const c=[...inputs];c[i]=v;setInputs(c);} ;
+
+      const regenerate=()=>{
+        setItems(buildExercises(100,theme));
+        setInputs(Array(100).fill(""));
+        setShow(false);
+      };
+
       const check=()=>setShow(true);
-      const reload=()=>{setItems(buildExercises());setInputs(Array(100).fill(""));setShow(false);} ;
 
-      const score = items.reduce((s,itm,i)=>s+(inputs[i].trim().toLowerCase()===itm.connector.toLowerCase()?1:0),0);
+      const score = items.reduce((s,itm,i)=> s+(inputs[i].trim().toLowerCase()===itm.connector.toLowerCase()?1:0),0);
 
       return (
-        <div className="bg-white/80 backdrop-blur p-8 rounded-2xl shadow-lg space-y-6 w-full max-h-[90vh] overflow-auto">
+        <div className="bg-white/80 backdrop-blur p-6 rounded-2xl shadow-lg space-y-6 w-full max-h-[92vh] overflow-auto">
           <h1 className="text-2xl font-bold text-center">100 exercices – Organisateurs textuels</h1>
-          <p className="text-center mb-4">Remplis chaque blanc avec le connecteur approprié.</p>
+
+          <div className="flex flex-wrap gap-4 items-center justify-center">
+            <label className="flex items-center gap-2">Thème:
+              <select value={theme} onChange={e=>{setTheme(e.target.value);}} className="border rounded px-2 py-1">
+                <option value="mixte">Mixte (aléatoire)</option>
+                <option value="temps">Temps</option>
+                <option value="opposition">Opposition</option>
+                <option value="comparaison">Comparaison</option>
+                <option value="concession">Concession</option>
+              </select>
+            </label>
+            <button onClick={regenerate} className="bg-indigo-600 text-white px-3 py-1 rounded-xl">Générer</button>
+          </div>
 
           <ol className="space-y-3 list-decimal list-inside text-sm">
             {items.map((itm,i)=>{
-              const before = itm.tpl.parts[0].replace("____","");
-              const after  = itm.tpl.parts[1];
               const correct = inputs[i].trim().toLowerCase()===itm.connector.toLowerCase();
               return (
                 <li key={i} className="space-x-2">
-                  <span>{before}</span>
+                  <span>{itm.tpl.before.replace("____","")}</span>
                   <input
-                    className={`border px-1 py-0.5 rounded w-28 focus:outline-none ${showScore? (correct?'border-green-500':'border-red-500') : ''}`}
+                    className={`border px-1 py-0.5 rounded w-28 focus:outline-none ${show? (correct?'border-green-500':'border-red-500') : ''}`}
                     value={inputs[i]}
                     onChange={e=>handleInput(i,e.target.value)}
                     placeholder="..."
                   />
-                  <span>{after}</span>
-                  {showScore && (
+                  <span>{itm.tpl.after}</span>
+                  {show && (
                     <span className="ml-2 text-xs italic">{correct? '✓' : itm.connector}</span>
                   )}
                 </li>
@@ -91,12 +118,12 @@
             })}
           </ol>
 
-          {!showScore ? (
-            <button onClick={check} className="bg-indigo-600 text-white px-4 py-2 rounded-xl block mx-auto mt-6">Vérifier mes 100 réponses</button>
+          {!show ? (
+            <button onClick={check} className="bg-green-700 text-white px-4 py-2 rounded-xl block mx-auto mt-4">Vérifier mes réponses</button>
           ) : (
-            <div className="text-center space-y-3 mt-6">
-              <p className="text-lg font-semibold">Score : {score} / 100</p>
-              <button onClick={reload} className="bg-green-600 text-white px-4 py-2 rounded-xl">Nouvel ensemble aléatoire</button>
+            <div className="text-center space-y-3 mt-4">
+              <p className="text-lg font-semibold">Score : {score} / {items.length}</p>
+              <button onClick={regenerate} className="bg-indigo-600 text-white px-4 py-2 rounded-xl">Nouveau tirage</button>
             </div>
           )}
         </div>
