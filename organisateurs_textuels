@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Organisateurs textuels – Générateur 100 exercices</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-yellow-50 to-rose-100 min-h-screen flex items-center justify-center p-4">
+  <div id="root" class="w-full max-w-4xl"></div>
+
+  <script type="text/babel">
+    ////////////////////////////////////////////////////////////////
+    //           Générateur de 100 exercices aléatoires            //
+    ////////////////////////////////////////////////////////////////
+
+    const CONNECTEURS = {
+      temps:        ["Puis", "Ensuite", "Plus tard", "Dès lors", "Finalement", "Auparavant"],
+      opposition:   ["mais", "cependant", "toutefois", "en revanche", "pourtant"],
+      comparaison:  ["comme", "ainsi que", "tel", "de même que"],
+      concession:   ["Bien que", "Quoique", "Même si", "Malgré", "En dépit de"]
+    };
+
+    const TEMPLATES = [
+      {cat:"temps", parts:["Il prit son petit-déjeuner. "," ____, il sortit travailler."]},
+      {cat:"opposition",parts:["Il est très intelligent, ",", il manque parfois de méthode."]},
+      {cat:"comparaison",parts:["Elle danse "," une ballerine."]},
+      {cat:"concession",parts:[" ____, il faisait très froid, nous avons continué la randonnée.",""]},
+      {cat:"opposition",parts:["Le premier exercice était facile ; ",", le second était beaucoup plus difficile."]},
+      {cat:"temps",parts:["Nous avons visité le musée et "," nous sommes allés au parc."]},
+      {cat:"comparaison",parts:["Il court "," le vent."]},
+      {cat:"concession",parts:[" ____, il soit tard, elle continue de lire.",""]},
+      {cat:"temps",parts:["D'abord il pleuvait ; "," le soleil est revenu."]},
+      {cat:"opposition",parts:["Il a travaillé dur ; ",", ses résultats restent médiocres."]}
+    ];
+
+    const rand = arr => arr[Math.floor(Math.random()*arr.length)];
+
+    // Génère n items (template + connector) puis mélange
+    function buildExercises(n=100){
+      const list=[];
+      for(let i=0;i<n;i++){
+        const tpl = rand(TEMPLATES);
+        const conn = rand(CONNECTEURS[tpl.cat]);
+        list.push({tpl,connector:conn});
+      }
+      // shuffle
+      for(let i=list.length-1;i>0;i--){const j=Math.floor(Math.random()* (i+1)); [list[i],list[j]]=[list[j],list[i]];}
+      return list;
+    }
+
+    function App(){
+      const [items,setItems]=React.useState(buildExercises());
+      const [inputs,setInputs]=React.useState(Array(100).fill(""));
+      const [showScore,setShow]=React.useState(false);
+
+      const handleInput=(i,val)=>{const c=[...inputs];c[i]=val;setInputs(c);} ;
+      const check=()=>setShow(true);
+      const reload=()=>{setItems(buildExercises());setInputs(Array(100).fill(""));setShow(false);} ;
+
+      const score = items.reduce((s,itm,i)=>s+(inputs[i].trim().toLowerCase()===itm.connector.toLowerCase()?1:0),0);
+
+      return (
+        <div className="bg-white/80 backdrop-blur p-8 rounded-2xl shadow-lg space-y-6 w-full max-h-[90vh] overflow-auto">
+          <h1 className="text-2xl font-bold text-center">100 exercices – Organisateurs textuels</h1>
+          <p className="text-center mb-4">Remplis chaque blanc avec le connecteur approprié.</p>
+
+          <ol className="space-y-3 list-decimal list-inside text-sm">
+            {items.map((itm,i)=>{
+              const before = itm.tpl.parts[0].replace("____","");
+              const after  = itm.tpl.parts[1];
+              const correct = inputs[i].trim().toLowerCase()===itm.connector.toLowerCase();
+              return (
+                <li key={i} className="space-x-2">
+                  <span>{before}</span>
+                  <input
+                    className={`border px-1 py-0.5 rounded w-28 focus:outline-none ${showScore? (correct?'border-green-500':'border-red-500') : ''}`}
+                    value={inputs[i]}
+                    onChange={e=>handleInput(i,e.target.value)}
+                    placeholder="..."
+                  />
+                  <span>{after}</span>
+                  {showScore && (
+                    <span className="ml-2 text-xs italic">{correct? '✓' : itm.connector}</span>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+
+          {!showScore ? (
+            <button onClick={check} className="bg-indigo-600 text-white px-4 py-2 rounded-xl block mx-auto mt-6">Vérifier mes 100 réponses</button>
+          ) : (
+            <div className="text-center space-y-3 mt-6">
+              <p className="text-lg font-semibold">Score : {score} / 100</p>
+              <button onClick={reload} className="bg-green-600 text-white px-4 py-2 rounded-xl">Nouvel ensemble aléatoire</button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+  </script>
+</body>
+</html>
