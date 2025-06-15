@@ -15,82 +15,20 @@
   <script type="text/babel">
     // ================== DONNÉES =======================
     const EXTRACTS = [
-      {
-        id:1,
-        source:"Extrait 1 (création)",
-        text:`Le train entra en gare à l’aube. Pauline descendit sur le quai désert ; elle serra contre elle la valise usée qui contenait toute sa vie. Devant la verrière embuée, un vieil homme agitait un journal froissé. Soudain, un chien noir jaillit d’un wagon et emporta la casquette du chef de gare ; Pauline éclata de rire. Au même instant, le vieil homme tourna la tête et croisa son regard. Un sourire de reconnaissance se dessina sur leurs visages.`,
-        questions:[
-          {id:"q1",type:"ce",q:"Où Pauline descend-elle du train ?",answer:"sur le quai"},
-          {id:"q2",type:"ce",q:"Que tient-elle serré contre elle ?",answer:"valise"},
-          {id:"q3",type:"ci",q:"Quel est le lien probable entre Pauline et le vieil homme ?",answer:"Ils se connaissent / parenté"},
-          {id:"q4",type:"i",q:"Pourquoi Pauline rit-elle quand le chien vole la casquette ? Donne 2 indices.",answer:"tension retombe / scène comique / inquiétude"}
-        ]
-      },
-      {
-        id:2,
-        source:"Extrait 2 (création)",
-        text:`Depuis ce jour-là, Hugo gravit chaque soir le vieux clocher pour allumer la lanterne rouge. Pourtant, ce mardi d’orage, il hésita ; des éclairs déchiraient le ciel. Bien qu’il fût trempé, il continua l’ascension, comme s’il suivait un devoir invisible. Arrivé au sommet, il découvrit une lettre glissée sous la lampe ; quelques mots : « Merci… reviens demain ».`,
-        questions:[
-          {id:"q1",type:"ce",q:"Quelle tâche Hugo accomplit-il chaque soir ?",answer:"allumer la lanterne"},
-          {id:"q2",type:"ce",q:"Quelle est la couleur de la lanterne ?",answer:"rouge"},
-          {id:"q3",type:"ci",q:"Pourquoi hésite‑t‑il ce soir‑là ?",answer:"orage / éclairs"},
-          {id:"q4",type:"i",q:"Qui a laissé la lettre, selon toi ? Justifie avec 2 indices.",answer:"personne aidée / devoir invisible"}
-        ]
-      },
-      {
-        id:3,
-        source:"Extrait 3 (création)",
-        text:`Il y a de cela très longtemps, au cours du XXᵉ siècle, Lina inventa une machine à écouter les rêves. Quelques mois plus tard, des savants, d’un autre côté, déclarèrent l’appareil impossible ; néanmoins, Lina persista. Le lendemain de sa première démonstration publique, tous les journaux titrèrent : « Une voix dans la nuit ! ». Contrairement aux sceptiques, la foule acclamait la jeune ingénieure.`,
-        questions:[
-          {id:"q1",type:"ce",q:"Que permet la machine de Lina ?",answer:"écouter les rêves"},
-          {id:"q2",type:"ce",q:"Comment réagit la foule ?",answer:"acclame"},
-          {id:"q3",type:"ci",q:"Pourquoi les savants déclarent‑ils l’appareil impossible ?",answer:"irréaliste / technologie"},
-          {id:"q4",type:"i",q:"Lina convaincra‑t‑elle le monde scientifique ? Justifie avec 2 éléments.",answer:"succès public / journaux"}
-        ]
-      }
-    ];
-
-    // ==================================================
-
-    function shuffle(arr){return arr.sort(()=>Math.random()-0.5);}
-
-    function App(){
-      const [extract,setExtract]=React.useState(()=>shuffle(EXTRACTS)[0]);
-      const [inputs,setInputs]=React.useState({});
-      const [show,setShow]=React.useState(false);
-
-      const handleChange=(qid,val)=>setInputs(prev=>({...prev,[qid]:val}));
-
-      const reset=()=>{const newEx=shuffle(EXTRACTS)[0];setExtract(newEx);setInputs({});setShow(false);} ;
-
-      return (
-        <div className="bg-white/80 p-8 rounded-2xl shadow-lg space-y-6 max-h-[92vh] overflow-auto">
-          <h1 className="text-2xl font-bold text-center">Exercice de lecture – CE / CI / I</h1>
-          <p className="text-center text-sm italic">{extract.source}</p>
-          <blockquote className="italic bg-orange-50 p-4 rounded-lg whitespace-pre-wrap leading-relaxed">{extract.text}</blockquote>
-
-          <div className="space-y-4">
-            {extract.questions.map((q,i)=>(
-              <div key={q.id} className="space-y-1">
-                <p className="font-medium">{i+1}. ({q.type.toUpperCase()}) {q.q}</p>
-                <textarea rows="2" className="w-full border rounded p-2 text-sm" value={inputs[q.id]||""} onChange={e=>handleChange(q.id,e.target.value)} disabled={show}></textarea>
-                {show && (
-                  <p className="text-sm text-gray-700"><span className="font-semibold">Corrigé :</span> {q.answer}</p>
-                )}
-              </div>
-            ))}
-          </div>
-
-          {!show ? (
-            <button onClick={()=>setShow(true)} className="bg-indigo-600 text-white px-4 py-2 rounded-xl block mx-auto">Afficher le corrigé</button>
-          ) : (
-            <button onClick={reset} className="bg-green-600 text-white px-4 py-2 rounded-xl block mx-auto">Nouvel extrait aléatoire</button>
-          )}
-        </div>
-      );
-    }
-
-    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
-  </script>
-</body>
-</html>
+      // -------- 1 à 7 (déjà présents) --------
+      {id:1,source:"Extrait 1",text:`Le train entra en gare à l’aube. Pauline descendit sur le quai désert ; elle serra contre elle la valise usée qui contenait toute sa vie. Devant la verrière embuée, un vieil homme agitait un journal froissé. Soudain, un chien noir jaillit d’un wagon et emporta la casquette du chef de gare ; Pauline éclata de rire. Au même instant, le vieil homme croisa son regard.`,questions:[{id:"1q1",type:"ce",q:"Où Pauline descend‑elle ?",answer:"Sur le quai désert"},{id:"1q2",type:"ci",q:"Quel lien semble unir Pauline et le vieil homme ?",answer:"Ils se connaissent"},{id:"1q3",type:"i",q:"Pourquoi Pauline rit‑elle ? Donne 2 indices.",answer:"Relâche la tension / scène comique"}]},
+      {id:2,source:"Extrait 2",text:`Depuis ce jour‑là, Hugo gravit chaque soir le clocher pour allumer la lanterne rouge. Pourtant, ce mardi d’orage, il hésita ; des éclairs déchiraient le ciel. Bien qu’il fût trempé, il poursuivit l’ascension. Arrivé au sommet, il trouva une lettre : « Merci… reviens demain ».`,questions:[{id:"2q1",type:"ce",q:"Quelle couleur a la lanterne ?",answer:"Rouge"},{id:"2q2",type:"ci",q:"Pourquoi hésite‑t‑il ?",answer:"À cause de l’orage"},{id:"2q3",type:"i",q:"Qui a laissé la lettre ? Justifie.",answer:"Personne aidée / devoir invisible"}]},
+      {id:3,source:"Extrait 3",text:`Il y a de cela très longtemps, Lina inventa une machine à écouter les rêves. Quelques mois plus tard, des savants déclarèrent l’appareil impossible ; néanmoins, Lina persista. Le lendemain de sa démonstration, les journaux titrèrent : « Une voix dans la nuit ! ». La foule acclamait la jeune ingénieure.`,questions:[{id:"3q1",type:"ce",q:"Que permet la machine ?",answer:"Écouter les rêves"},{id:"3q2",type:"ci",q:"Pourquoi les savants la jugent‑ils impossible ?",answer:"Technologie irréaliste"},{id:"3q3",type:"i",q:"Lina convaincra‑t‑elle les savants ? 2 preuves.",answer:"Succès public / sceptiques"}]},
+      {id:4,source:"Extrait 4",text:`Le soir tombait sur le port. Malik comptait les mouettes, adossé au phare éteint. À l’horizon, une voile blanche apparut, comme un souvenir. Bien qu’il ait promis d’oublier cette traversée, il sauta dans sa barque. Cependant, la marée se retirait déjà.`,questions:[{id:"4q1",type:"ce",q:"Que voit Malik à l’horizon ?",answer:"Une voile blanche"},{id:"4q2",type:"ci",q:"Pourquoi saute‑t‑il dans la barque ?",answer:"Il veut rejoindre la voile / souvenir"},{id:"4q3",type:"i",q:"Réussira‑t‑il ? Justifie.",answer:"Marée basse / détermination"}]},
+      {id:5,source:"Extrait 5",text:`Au début du printemps, Clara trouva un carnet sous le banc du parc. Sur la couverture : « À celui qui ose ». Le lendemain, elle y écrivit son prénom. Pourtant, personne ne vint le récupérer. Quelques semaines plus tard, le carnet débordait de messages anonymes.`,questions:[{id:"5q1",type:"ce",q:"Quelle saison ?",answer:"Printemps"},{id:"5q2",type:"ci",q:"Pourquoi écrit‑elle son prénom ?",answer:"Pour participer au jeu"},{id:"5q3",type:"i",q:"Que deviendra le carnet ? 2 indices.",answer:"Lieu d’échanges / anonyme"}]},
+      {id:6,source:"Extrait 6",text:`Chaque matin, avant l’aube, Noé alignait des pierres au sommet de la colline. Quelques mois plus tard, le village découvrit un dessin dans l’herbe. Bien que certains se moquassent, d’autres parlèrent de présage. Ainsi naquit la légende du dessin de pierre.`,questions:[{id:"6q1",type:"ce",q:"Que fait Noé ?",answer:"Aligne des pierres"},{id:"6q2",type:"ci",q:"Pourquoi les villageois parlent‑ils de présage ?",answer:"Dessin mystérieux"},{id:"6q3",type:"i",q:"Quelle pourrait être la suite ? 2 indices.",answer:"Superstition / légende"}]},
+      {id:7,source:"Extrait 7",text:`Depuis ce jour‑là, le vieil horloger descendait la rue à midi précis. Pourtant, l’horloge du clocher avançait d’une minute. Le jour où elle sonna juste, la ville s’arrêta de parler.`,questions:[{id:"7q1",type:"ce",q:"Quelle anomalie l’horloge avait‑elle ?",answer:"Elle avançait d’une minute"},{id:"7q2",type:"ci",q:"Pourquoi la ville se tait‑elle ?",answer:"Événement inhabituel"},{id:"7q3",type:"i",q:"Que va faire l’horloger ensuite ? 2 raisons.",answer:"Fierté / retraite"}]},
+      // -------- Nouveaux 8 à 20 --------
+      {id:8,source:"Extrait 8",text:`Le lendemain de la tempête, la plage était méconnaissable. Pourtant, une unique empreinte de pas menait droit vers la mer. Lucie hésita, puis suivit la trace jusqu’à l’eau glacée. Elle découvrit alors une bouteille scellée contenant une carte tachée de sel.`,questions:[{id:"8q1",type:"ce",q:"Que trouve Lucie sur la plage ?",answer:"Une empreinte de pas"},{id:"8q2",type:"ci",q:"Pourquoi suit‑elle l’empreinte ?",answer:"Curiosité / mystère"},{id:"8q3",type:"i",q:"Que peut contenir la carte ? Justifie par 2 éléments.",answer:"Trésor / message (bouteille scellée, tachée de sel)"}]},
+      {id:9,source:"Extrait 9",text:`Au sommet du glacier, Élias planta un drapeau orange. Bien que le vent hurlât, il resta immobile, contemplant la vallée. Soudain, une lumière clignota dans le village en contrebas, comme une réponse à son signal.`,questions:[{id:"9q1",type:"ce",q:"Quelle couleur est le drapeau ?",answer:"Orange"},{id:"9q2",type:"ci",q:"Pourquoi Élias plante‑t‑il un drapeau ?",answer:"Envoyer un signal"},{id:"9q3",type:"i",q:"Qui répond avec la lumière ? 2 indices.",answer:"Allié au village (lumière répond, drapeau signal)"}]},
+      {id:10,source:"Extrait 10",text:`Au crépuscule, la bibliothèque ferma ses portes. Cependant, Ana ne sortit pas ; elle se cacha entre les rayons, décidée à passer la nuit à chercher le livre interdit. Vers minuit, un chuchotement monta du sous‑sol : « Pars tant qu’il est temps… ».`,questions:[{id:"10q1",type:"ce",q:"Où Ana se cache‑t‑elle ?",answer:"Entre les rayons de la bibliothèque"},{id:"10q2",type:"ci",q:"Quel est son objectif ?",answer:"Trouver le livre interdit"},{id:"10q3",type:"i",q:"Qui chuchote selon toi ? Donne 2 preuves.",answer:"Gardien / esprit (sous‑sol, avertissement)"}]},
+      {id:11,source:"Extrait 11",text:`Chaque été, avant l’aube, les abeilles de Jade formaient un cercle parfait au‑dessus du jardin. Cette année, pourtant, elles se dispersèrent soudainement vers la forêt. Malgré sa peur, Jade suivit le bourdonnement jusqu’à une clairière inondée de fleurs inconnues.`,questions:[{id:"11q1",type:"ce",q:"Quel phénomène annuel Jade observe‑t‑elle ?",answer:"Cercle d’abeilles"},{id:"11q2",type:"ci",q:"Pourquoi suit‑elle les abeilles ?",answer:"Curiosité / comprendre changement"},{id:"11q3",type:"i",q:"Que découvrira Jade ? 2 arguments.",answer:"Nouvelle espèce / secret nature (fleurs inconnues, clairière)"}]},
+      {id:12,source:"Extrait 12",text:`Au début de la saison sèche, le puits du village s’assécha. Pourtant, chaque nuit, le niveau montait d’une pierre. Le chef ordonna à Mira de veiller ; elle découvrit un enfant remplissant le puits goutte à goutte depuis sa gourde fissurée.`,questions:[{id:"12q1",type:"ce",q:"Que se passe‑t‑il chaque nuit avec le puits ?",answer:"Le niveau monte"},{id:"12q2",type:"ci",q:"Comment l’enfant remplit‑il le puits ?",answer:"Avec sa gourde"},{id:"12q3",type:"i",q:"Pourquoi agit‑il ainsi ? 2 preuves.",answer:"Altruisme / culpabilité (se cache, effort nocturne)"}]},
+      {id:13,source:"Extrait 13",text:`Dès l’aube, un parfum de cannelle flottait dans la ruelle. Nadim suivit l’odeur jusqu’à une porte entrouverte. À l’intérieur, un four éteint irradiait encore de chaleur, mais aucune trace de boulanger. Seule restait une miche dorée posée sur le comptoir.`,questions:[{id:"13q1",type:"ce",q:"Quel parfum guide Nadim ?",answer:"Cannelle"},{id:"13q2",type:"ci",q:"Que déduit‑il de l’absence de boulanger ?`,answer:"Disparition soudaine"},{id:"13q3",type:"i",q:"Que feras‑tu à sa place ? Justifie.",answer:"Prendre la miche / chercher le boulanger (four chaud, porte entrouverte)"}]},
+      {id:14,source:"Extrait 14",text:`En 1967, Marc envoya un message vers l’espace. Plusieurs décennies plus tard, une onde inhabituelle fit vibrer son vieux poste à galène. Pourtant, l’antenne était débranchée. Marc sourit : enfin, on lui répondait.`,questions:[{id:"14q1",type:"ce",q:"Quel appareil reçoit le signal ?",answer:"Poste à galène"},{id:"14q2",type:"ci",q:"Pourquoi est‑ce surprenant ?",answer:"Antenne débranchée"},{id:"14q3",type:"i",q:"Le signal vient‑il d’extraterrestres ? 2 raisons.",answer:"Onde inhabituelle / réponse attendue depuis 1967"}]},
+      {id:15,source:"Extrait 15",text:`À midi pile, la statue de la place ombragea la boîte verte déposée au pied du piédestal. Bien que la foule passât sans la voir, un jeune facteur s’arrêta. Dans la boîte, il trouva cent clés identiques et une note : « Une seule ouvre le temps ».`,questions:[{id:"15q1",type:"
