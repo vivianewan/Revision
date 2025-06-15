@@ -13,20 +13,21 @@
   <div id="root" class="w-full max-w-3xl"></div>
 
   <script type="text/babel">
-/*****************************************************************
- *  Variante plus difficile :                                     *
- *  – TOUS les mots/segments deviennent cliquables.               *
- *  – Seuls les organisateurs repertoriés sont notés.             *
- *  – Les autres mots peuvent distraire / fausses pistes.         *
- *****************************************************************/
+/***************************************************************
+ *  Niveau avancé :                                            *
+ *  – Toute la phrase est cliquable, mais les connecteurs      *
+ *    multi‑mots restent en un seul bloc.                      *
+ *  – Les mots ordinaires servent de fausses pistes.           *
+ ***************************************************************/
 
-const CYCLES=["","temps","opp"]; // vide → temps → opp → vide
-function nextCat(c){return CYCLES[(CYCLES.indexOf(c)+1)%CYCLES.length];}
+/***** cycle & couleurs *****/
+const CYCLE=["","temps","opp"]; // vide → temps → opp → vide
 const COLORS={temps:"bg-yellow-200",opp:"bg-blue-200"};
+const nextCat=cat=>CYCLE[(CYCLE.indexOf(cat)+1)%CYCLE.length];
 
-// --------- helpers pour banque (inchangé) ---------
-function t(word){return {word,cat:"temps"};}
-function o(word){return {word,cat:"opp"};}
+/***** banque *****/
+function t(w){return {word:w,cat:"temps"};}
+function o(w){return {word:w,cat:"opp"};}
 const BANK=[
   {source:"Victor Hugo – Les Misérables",text:"Il pleuvait depuis l'aube; pourtant, Jean Valjean marchait d'un pas ferme, puis il pressa l'allure, comme s'il voulait semer les souvenirs amers qui le poursuivaient.",tags:[o("pourtant"),t("puis"),o("comme")]},
   {source:"Jules Verne – Le Tour du monde en 80 jours",text:"Phileas Fogg consulta sa montre, ensuite il referma son carnet; bien que les retards se multiplient, il demeurait imperturbable.",tags:[t("ensuite"),o("bien que")]},
@@ -35,56 +36,76 @@ const BANK=[
   {source:"Stendhal – Le Rouge et le Noir",text:"Bien que le salon fût rempli de monde, Julien se sentait seul; plus tard, il s'approcha de la fenêtre.",tags:[o("Bien que"),t("plus tard")]},
   {source:"Guy de Maupassant – Contes de la Bécasse",text:"Il était déjà tard; pourtant ils continuaient leur marche, comme si la fatigue ne les atteignait jamais.",tags:[o("pourtant"),o("comme")]},
   {source:"Émile Zola – Germinal",text:"Étienne avançait dans la galerie; tandis que ses camarades parlaient, il restait silencieux.",tags:[o("tandis que")]},
-  {source:"Marcel Proust – Du côté de chez Swann",text:"Il demeura longtemps immobile; pourtant, son esprit vagabondait; bien que la cloche eût sonné, il ne bougea pas.",tags:[o("pourtant"),o("bien que")]}
+  {source:"Marcel Proust – Du côté de chez Swann",text:"Il demeura longtemps immobile; pourtant, son esprit vagabondait; bien que la cloche eût sonné, il ne bougea pas.",tags:[o("pourtant"),o("bien que")]},
+  {source:"Alexandre Dumas – Les Trois Mousquetaires",text:"Au cours du XIXe siècle, d'Artagnan quitta sa Gascogne; toutefois, il ne renonça pas à son accent; par contre, il gagna en bravoure.",tags:[t("Au cours du XIXe siècle"),o("toutefois"),o("par contre")]},
+  {source:"Colette – Claudine à l'école",text:"Il y a de cela très longtemps, Claudine observait la cour; au contraire, ses camarades jouaient bruyamment.",tags:[t("Il y a de cela très longtemps"),o("au contraire")]},
+  {source:"Honoré de Balzac – Le Père Goriot",text:"En 1834, Rastignac contemplait Paris; certes, il manquait d'argent, mais il nourrissait de grandes ambitions.",tags:[t("En 1834"),o("certes"),o("mais")]},
+  {source:"Jules Renard – Poil de Carotte",text:"De nos jours, on se souvient encore de Poil de Carotte; néanmoins, peu comprennent vraiment sa solitude.",tags:[t("De nos jours"),o("néanmoins")]},
+  {source:"Romain Rolland – Jean-Christophe",text:"Au début, la rivière semblait calme; d'un autre côté, le ciel menaçait d'orage.",tags:[t("Au début"),o("d'un autre côté")]}
 ];
-function pick(){return BANK[Math.floor(Math.random()*BANK.length)];}
+const pick=()=>BANK[Math.floor(Math.random()*BANK.length)];
 
-/* Découpe : on veut chaque mot/pontuation cliquable. On repère organisateurs. */
-function tokenize(text){
-  const tokens=[];const regex=/\w+|[^\w\s]+|\s+/g;let m;while((m=regex.exec(text))!==null){tokens.push(m[0]);}return tokens;}
-
-function prepareSegments(text,tags){
-  // map organiser words (lowercase) to cat
-  const map=new Map(tags.map((t,i)=>[t.word.toLowerCase(),{cat:t.cat,idx:i}]));
-  return tokenize(text).map(tok=>{
-    const key=tok.trim().toLowerCase();
-    if(map.has(key)) return {...map.get(key),txt:tok};
-    return {cat:null,idx:null,txt:tok};
+/***** segmentation *****/
+const WORD_RE=/\w+|[^\w\s]+/g; // mot ou ponctuation hors espace
+function fakeSegments(str){
+  const out=[];let pos=0;let m;
+  while((m=WORD_RE.exec(str))){
+    if(m.index>pos) out.push({txt:str.slice(pos,m.index)});
+    out.push({txt:m[0]});
+    pos=m.index+m[0].length;
+  }
+  if(pos<str.length) out.push({txt:str.slice(pos)});
+  return out;
+}
+function makeSegments(text,tags){
+  let pos=0;const segs=[];const lower=text.toLowerCase();
+  tags.forEach((tag,i)=>{
+    const idx=lower.indexOf(tag.word.toLowerCase(),pos);
+    if(idx===-1) return; // sécurité
+    if(idx>pos) segs.push(...fakeSegments(text.slice(pos,idx)));
+    segs.push({txt:text.slice(idx,idx+tag.word.length),idx:i,cat:tag.cat});
+    pos=idx+tag.word.length;
   });
+  if(pos<text.length) segs.push(...fakeSegments(text.slice(pos)));
+  return segs;
 }
 
+/***** App *****/
 function App(){
   const [para,setPara]=React.useState(pick());
   const [choices,setChoices]=React.useState(()=>Array(para.tags.length).fill(""));
   const [done,setDone]=React.useState(false);
-  const refresh=()=>{const p=pick();setPara(p);setChoices(Array(p.tags.length).fill(""));setDone(false);} ;
-
-  const segments=React.useMemo(()=>prepareSegments(para.text,para.tags),[para]);
-
+  const [tick,setTick]=React.useState(0); // force render for fake
+  const segs=React.useMemo(()=>makeSegments(para.text,para.tags),[para]);
   const score=para.tags.reduce((s,t,i)=>s+(choices[i]===t.cat?1:0),0);
 
-  const setChoice=(seg)=>{
+  const handleClick=seg=>{
     if(done) return;
-    if(seg.idx===null){seg.fake=nextCat(seg.fake||"");setRenderTick(t=>t+1);return;}
-    const arr=[...choices];arr[seg.idx]=nextCat(arr[seg.idx]);setChoices(arr);
+    if(seg.idx===undefined){ // faux mot
+      seg.temp=nextCat(seg.temp||"");
+      setTick(t=>t+1);
+    }else{
+      const arr=[...choices];arr[seg.idx]=nextCat(arr[seg.idx]);setChoices(arr);
+    }
   };
-  const [renderTick,setRenderTick]=React.useState(0); // force rerender for fake states
+
+  const reset=()=>{const p=pick();setPara(p);setChoices(Array(p.tags.length).fill(""));setDone(false);};
 
   return (
     <div className="bg-white/80 p-6 rounded-2xl shadow-lg space-y-6 max-h-[90vh] overflow-auto">
-      <h1 className="text-xl font-bold text-center">Organisateurs textuels (niveau 2)</h1>
+      <h1 className="text-xl font-bold text-center">Organisateurs textuels (niveau avancé)</h1>
       <p className="text-center text-sm italic">{para.source}</p>
       <p className="leading-relaxed text-justify select-none">
-        {segments.map((seg,i)=>{
-          const col= seg.idx!==null ? COLORS[choices[seg.idx]] : COLORS[seg.fake];
-          const border=done && seg.idx!==null ? (choices[seg.idx]===seg.cat? 'border-green-500':'border-red-500') : '';
-          return <span key={i} onClick={()=>setChoice(seg)} className={`cursor-pointer ${col||''} ${border?'border-b-2 '+border:''}`}>{seg.txt}</span>;
+        {segs.map((s,i)=>{
+          const col=s.idx!==undefined?COLORS[choices[s.idx]]:COLORS[s.temp];
+          const border=done&&s.idx!==undefined?(choices[s.idx]===s.cat?'border-green-500':'border-red-500'):'';
+          return <span key={i} onClick={()=>handleClick(s)} className={`cursor-pointer ${col||''} ${border?'border-b-2 '+border:''}`}>{s.txt}</span>;
         })}
       </p>
       {!done
         ? <button onClick={()=>setDone(true)} className="bg-indigo-600 text-white px-4 py-2 rounded-xl block mx-auto">Vérifier</button>
-        : <div className="text-center space-y-2"><p className="font-semibold">Score : {score} / {para.tags.length}</p><button onClick={refresh} className="bg-green-600 text-white px-3 py-1 rounded-xl">Nouvel extrait</button></div>}
-      <p className="text-xs text-center text-gray-600 mt-1">Clique sur n’importe quel mot pour lui attribuer une catégorie : jaune = temps, bleu = opposition ; reclique pour changer / effacer. Seuls les véritables organisateurs sont notés.</p>
+        : <div className="text-center space-y-2"><p className="font-semibold">Score : {score}/{para.tags.length}</p><button onClick={reset} className="bg-green-600 text-white px-3 py-1 rounded-xl">Nouvel extrait</button></div>}
+      <p className="text-xs text-center text-gray-600 mt-1">Clique sur n’importe quel mot : jaune = temps, bleu = opposition/concession/comparaison. Reclique pour changer/effacer. Seuls les véritables organisateurs comptent pour le score.</p>
     </div>
   );
 }
