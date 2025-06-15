@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Organisateurs textuels – Mise en évidence</title>
+  <title>Organisateurs textuels – Mise en évidence (niveau avancé)</title>
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
@@ -14,18 +14,17 @@
 
   <script type="text/babel">
 /*****************************************************************
- *  Nouvel objectif :                                             *
- *  – L’élève doit "surligner" les organisateurs (cliquer dessus) *
- *    et choisir la bonne catégorie en cliquant plusieurs fois.   *
- *  – Cycle : vide → Temps → Opp/Conc/Comp → vide…                *
+ *  Variante plus difficile :                                     *
+ *  – TOUS les mots/segments deviennent cliquables.               *
+ *  – Seuls les organisateurs repertoriés sont notés.             *
+ *  – Les autres mots peuvent distraire / fausses pistes.         *
  *****************************************************************/
 
-const CYCLES=["","temps","opp"];
-function nextCat(cat){return CYCLES[(CYCLES.indexOf(cat)+1)%CYCLES.length];}
-
+const CYCLES=["","temps","opp"]; // vide → temps → opp → vide
+function nextCat(c){return CYCLES[(CYCLES.indexOf(c)+1)%CYCLES.length];}
 const COLORS={temps:"bg-yellow-200",opp:"bg-blue-200"};
 
-/* ---- Banc d'extraits (inchangé) ---- */
+// --------- helpers pour banque (inchangé) ---------
 function t(word){return {word,cat:"temps"};}
 function o(word){return {word,cat:"opp"};}
 const BANK=[
@@ -36,57 +35,56 @@ const BANK=[
   {source:"Stendhal – Le Rouge et le Noir",text:"Bien que le salon fût rempli de monde, Julien se sentait seul; plus tard, il s'approcha de la fenêtre.",tags:[o("Bien que"),t("plus tard")]},
   {source:"Guy de Maupassant – Contes de la Bécasse",text:"Il était déjà tard; pourtant ils continuaient leur marche, comme si la fatigue ne les atteignait jamais.",tags:[o("pourtant"),o("comme")]},
   {source:"Émile Zola – Germinal",text:"Étienne avançait dans la galerie; tandis que ses camarades parlaient, il restait silencieux.",tags:[o("tandis que")]},
-  {source:"Marcel Proust – Du côté de chez Swann",text:"Il demeura longtemps immobile; pourtant, son esprit vagabondait; bien que la cloche eût sonné, il ne bougea pas.",tags:[o("pourtant"),o("bien que")]},
-  {source:"Paragraphe 1",text:"Au début, il faisait froid; puis le soleil parut; cependant, les voyageurs restaient prudents; d'un autre côté, en revanche, le guide avançait.",tags:[t("Au début"),t("puis"),o("cependant"),o("d'un autre côté"),o("en revanche")]},
-  {source:"Paragraphe 2",text:"Le lendemain, nous reprîmes la route; quelques mois plus tard, nous atteignîmes la capitale; pourtant, bien que fatigués, nous célébrâmes la victoire; à la différence de la veille, certes, la fête fut courte.",tags:[t("Le lendemain"),t("quelques mois plus tard"),o("pourtant"),o("bien que"),o("à la différence de"),o("certes")]},
-  {source:"Paragraphe 3",text:"Depuis ce jour-là, il voyage; de nos jours, il écrit ses mémoires; en 1967, il traversa l'océan; au cours du XXe siècle, il vécut mille vies; il y a de cela très longtemps, toutefois, il doutait encore; par contre, maintenant, il sourit.",tags:[t("Depuis ce jour-là"),t("de nos jours"),t("en 1967"),t("au cours du XXe siècle"),t("il y a de cela très longtemps"),o("toutefois"),o("par contre")]},
-  {source:"Paragraphe 4",text:"En tout cas, il décida de partir; alors que la pluie tombait, néanmoins, son espoir grandissait; contrairement à ses amis, il avançait.",tags:[o("En tout cas"),o("alors que"),o("néanmoins"),o("contrairement à")]}
+  {source:"Marcel Proust – Du côté de chez Swann",text:"Il demeura longtemps immobile; pourtant, son esprit vagabondait; bien que la cloche eût sonné, il ne bougea pas.",tags:[o("pourtant"),o("bien que")]}
 ];
 function pick(){return BANK[Math.floor(Math.random()*BANK.length)];}
 
-// Séparation en segments (identique) ------------------
-function split(text,tags){
-  const segs=[];let pos=0;
-  tags.forEach((t,i)=>{
-    const m=text.toLowerCase().indexOf(t.word.toLowerCase(),pos);
-    if(m!==-1){
-      segs.push({txt:text.slice(pos,m),tag:null});
-      segs.push({txt:t.word,tag:i});
-      pos=m+t.word.length;
-    }
+/* Découpe : on veut chaque mot/pontuation cliquable. On repère organisateurs. */
+function tokenize(text){
+  const tokens=[];const regex=/\w+|[^\w\s]+|\s+/g;let m;while((m=regex.exec(text))!==null){tokens.push(m[0]);}return tokens;}
+
+function prepareSegments(text,tags){
+  // map organiser words (lowercase) to cat
+  const map=new Map(tags.map((t,i)=>[t.word.toLowerCase(),{cat:t.cat,idx:i}]));
+  return tokenize(text).map(tok=>{
+    const key=tok.trim().toLowerCase();
+    if(map.has(key)) return {...map.get(key),txt:tok};
+    return {cat:null,idx:null,txt:tok};
   });
-  segs.push({txt:text.slice(pos),tag:null});
-  return segs;
 }
 
 function App(){
   const [para,setPara]=React.useState(pick());
-  const [choice,setChoice]=React.useState(()=>Array(para.tags.length).fill(""));
+  const [choices,setChoices]=React.useState(()=>Array(para.tags.length).fill(""));
   const [done,setDone]=React.useState(false);
-  const refresh=()=>{const p=pick();setPara(p);setChoice(Array(p.tags.length).fill(""));setDone(false);} ;
+  const refresh=()=>{const p=pick();setPara(p);setChoices(Array(p.tags.length).fill(""));setDone(false);} ;
 
-  const toggle=(idx)=>{
+  const segments=React.useMemo(()=>prepareSegments(para.text,para.tags),[para]);
+
+  const score=para.tags.reduce((s,t,i)=>s+(choices[i]===t.cat?1:0),0);
+
+  const setChoice=(seg)=>{
     if(done) return;
-    const c=[...choice];c[idx]=nextCat(c[idx]);setChoice(c);
+    if(seg.idx===null){seg.fake=nextCat(seg.fake||"");setRenderTick(t=>t+1);return;}
+    const arr=[...choices];arr[seg.idx]=nextCat(arr[seg.idx]);setChoices(arr);
   };
-
-  const score=para.tags.reduce((s,t,i)=>s+(choice[i]===t.cat?1:0),0);
-  const segments=React.useMemo(()=>split(para.text,para.tags),[para]);
+  const [renderTick,setRenderTick]=React.useState(0); // force rerender for fake states
 
   return (
-    <div className="bg-white/80 p-6 rounded-2xl shadow-lg space-y-6 max-h-[90vh] overflow-auto font-serif">
-      <h1 className="text-xl font-bold text-center">Organisateurs textuels</h1>
+    <div className="bg-white/80 p-6 rounded-2xl shadow-lg space-y-6 max-h-[90vh] overflow-auto">
+      <h1 className="text-xl font-bold text-center">Organisateurs textuels (niveau 2)</h1>
       <p className="text-center text-sm italic">{para.source}</p>
-      <p className="leading-relaxed text-justify">
-        {segments.map((seg,i)=> seg.tag===null
-          ? <span key={i}>{seg.txt}</span>
-          : <span key={i} onClick={()=>toggle(seg.tag)} className={`cursor-pointer ${COLORS[choice[seg.tag]]||""} ${done? (choice[seg.tag]===para.tags[seg.tag].cat? 'border-b-2 border-green-600':'border-b-2 border-red-600'):''}`}>{seg.txt}</span>
-        )}
+      <p className="leading-relaxed text-justify select-none">
+        {segments.map((seg,i)=>{
+          const col= seg.idx!==null ? COLORS[choices[seg.idx]] : COLORS[seg.fake];
+          const border=done && seg.idx!==null ? (choices[seg.idx]===seg.cat? 'border-green-500':'border-red-500') : '';
+          return <span key={i} onClick={()=>setChoice(seg)} className={`cursor-pointer ${col||''} ${border?'border-b-2 '+border:''}`}>{seg.txt}</span>;
+        })}
       </p>
       {!done
         ? <button onClick={()=>setDone(true)} className="bg-indigo-600 text-white px-4 py-2 rounded-xl block mx-auto">Vérifier</button>
         : <div className="text-center space-y-2"><p className="font-semibold">Score : {score} / {para.tags.length}</p><button onClick={refresh} className="bg-green-600 text-white px-3 py-1 rounded-xl">Nouvel extrait</button></div>}
-      <p className="text-xs text-center text-gray-600 mt-2">Clique plusieurs fois sur un mot pour faire apparaître sa catégorie (jaune = temps, bleu = opposition). Clique encore pour effacer.</p>
+      <p className="text-xs text-center text-gray-600 mt-1">Clique sur n’importe quel mot pour lui attribuer une catégorie : jaune = temps, bleu = opposition ; reclique pour changer / effacer. Seuls les véritables organisateurs sont notés.</p>
     </div>
   );
 }
