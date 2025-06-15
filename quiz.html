@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quiz – Influence de l'Église médiévale</title>
+  <title>Quiz – Influence de l'Église médiévale (correction souple)</title>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -13,7 +13,15 @@
   <div id="root" class="w-full max-w-3xl"></div>
 
   <script type="text/babel">
-    /* === Jeu de 30 questions variées (MCQ, V/F, Trou) === */
+    // ==== util : correspondance souple pour questions "fill" ====
+    const normalize = str => str.normalize('NFD').replace(/\p{Diacritic}/gu,'').toLowerCase();
+    function softMatch(user,expected){
+      const u = normalize(user);
+      const keywords = normalize(expected).split(/[^a-z0-9]+/).filter(w=>w.length>2);
+      return keywords.some(k=>u.includes(k));
+    }
+
+    // ------------- questions (copiées) ---------------
     const questions = [
       {id:1, type:'mc', q:"Quel empereur légalise le christianisme en 313 ?", choices:["Dioclétien","Constantin","Théodose I","Charlemagne"], correct:1},
       {id:2, type:'mc', q:"En 800, le pape couronne…", choices:["Charles Martel","Clovis","Charlemagne","Otton I"], correct:2},
@@ -72,128 +80,50 @@
       {id:55, type:'fill', q:"Quel style architectural se développe à la fin du Moyen Âge pour les églises et cathédrales ?", answer:"Le style roman (églises basses aux murs épais) puis le style gothique (grandes cathédrales élevées)."}
     ];
 
-    function QuizApp() {
-      const [step, setStep] = React.useState(0); // 0: intro, 1: quiz, 2: score, 3: recap
-      const [index, setIndex] = React.useState(0);
-      const [score, setScore] = React.useState(0);
-      const [responses, setResponses] = React.useState([]);
-      const q = questions[index];
+    // ------------- components ----------------
+    function QuizApp(){
+      const [step,setStep]=React.useState(0); // 0 intro,1 quiz,2 result,3 recap
+      const [idx,setIdx]=React.useState(0);
+      const [score,setScore]=React.useState(0);
+      const [recap,setRecap]=React.useState([]);
+      const q = questions[idx];
 
-      const handleAnswer = (userAnswer, isCorrect) => {
-        setResponses((r) => [
-          ...r,
-          {
-            question: q.q,
-            user: userAnswer,
-            correct:
-              q.type === 'fill'
-                ? q.answer
-                : q.type === 'tf'
-                ? q.correct
-                  ? 'Vrai'
-                  : 'Faux'
-                : q.choices[q.correct],
-            isCorrect,
-          },
-        ]);
-        if (isCorrect) setScore((s) => s + 1);
-        if (index + 1 < questions.length) {
-          setIndex(index + 1);
-        } else {
-          setStep(2);
-        }
+      const record=(user,isCorrect)=>{
+        setRecap(r=>[...r,{question:q.q,user,correct:q.type==='fill'?q.answer:(q.type==='tf'?(q.correct?'Vrai':'Faux'):q.choices[q.correct]),isCorrect}]);
+        if(isCorrect) setScore(s=>s+1);
+        if(idx+1<questions.length) setIdx(i=>i+1); else setStep(2);
       };
 
-      const restart = () => {
-        setIndex(0);
-        setScore(0);
-        setResponses([]);
-        setStep(1);
-      };
+      if(step===0) return <Intro onStart={()=>setStep(1)} />;
+      if(step===2) return <Result score={score} total={questions.length} onRecap={()=>setStep(3)} onRestart={()=>{setIdx(0);setScore(0);setRecap([]);setStep(1);}} />;
+      if(step===3) return <Recap recap={recap} onRestart={()=>{setIdx(0);setScore(0);setRecap([]);setStep(1);}} />;
 
-      if (step === 0) {
-        return (
-          <div className="bg-white/80 p-8 rounded-2xl shadow-lg text-center space-y-4">
-            <h1 className="text-2xl font-bold">Quiz – Influence de l'Église médiévale</h1>
-            <p>{questions.length} questions variées (MCQ, vrai / faux, trou).</p>
-            <button onClick={() => setStep(1)} className="bg-indigo-600 text-white px-4 py-2 rounded-xl shadow">Commencer</button>
-          </div>
-        );
-      }
-
-      if (step === 2) {
-        return (
-          <div className="bg-white/80 p-8 rounded-2xl shadow-lg text-center space-y-4">
-            <h1 className="text-2xl font-bold">Résultat</h1>
-            <p className="text-xl">{score} / {questions.length} bonnes réponses</p>
-            <div className="flex gap-4 justify-center">
-              <button onClick={() => setStep(3)} className="bg-indigo-600 text-white px-4 py-2 rounded-xl">Voir le récapitulatif</button>
-              <button onClick={restart} className="bg-green-600 text-white px-4 py-2 rounded-xl">Rejouer</button>
-            </div>
-          </div>
-        );
-      }
-
-      if (step === 3) {
-        return (
-          <div className="bg-white/80 p-8 rounded-2xl shadow-lg space-y-6 w-full">
-            <h1 className="text-2xl font-bold text-center">Récapitulatif</h1>
-            <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
-              {responses.map((r, i) => (
-                <div key={i} className="border-b pb-2">
-                  <p className="font-semibold">{i + 1}. {r.question}</p>
-                  <p>Votre réponse : <span className="font-medium">{r.user || <em>Aucune</em>}</span></p>
-                  <p>Bonne réponse : <span className="font-medium">{r.correct}</span></p>
-                  <p className={r.isCorrect ? 'text-green-700' : 'text-red-700'}>{r.isCorrect ? 'Correct' : 'Incorrect'}</p>
-                </div>
-              ))}
-            </div>
-            <div className="text-center">
-              <button onClick={restart} className="bg-green-600 text-white px-4 py-2 rounded-xl">Rejouer</button>
-            </div>
-          </div>
-        );
-      }
-
-      /* rendu de la question courante */
-      return (
-        <div className="bg-white/80 p-8 rounded-2xl shadow-lg space-y-6 w-full">
-          <div className="text-sm text-right">Question {index+1}/{questions.length}</div>
-          <h2 className="text-lg font-semibold whitespace-pre-wrap">{q.q}</h2>
-          {q.type==='mc' && (
-            <div className="flex flex-col gap-3 mt-4">
-              {q.choices.map((choice,i)=>(
-                <button key={i} onClick={()=>handleAnswer(choice,i===q.correct)} className="border rounded-lg px-4 py-2 hover:bg-indigo-100 text-left">{String.fromCharCode(97+i)}) {choice}</button>
-              ))}
-            </div>
-          )}
-          {q.type==='tf' && (
-            <div className="flex gap-3 mt-4 justify-center">
-              <button onClick={()=>handleAnswer('Vrai', true===q.correct)} className="bg-green-600 text-white px-6 py-2 rounded-xl">Vrai</button>
-              <button onClick={()=>handleAnswer('Faux', false===q.correct)} className="bg-red-600 text-white px-6 py-2 rounded-xl">Faux</button>
-            </div>
-          )}
-          {q.type==='fill' && (
-            <FillQuestion q={q} onSubmit={(val, ok) => handleAnswer(val, ok)} />
-          )}
-        </div>
-      );
+      return <QuestionCard q={q} index={idx} total={questions.length} onAnswer={record}/>;
     }
 
-    function FillQuestion({q, onSubmit}) {
-      const [value,setValue]=React.useState("");
-      const check=()=>{
-        onSubmit(value.trim(), value.trim().toLowerCase()===q.answer.toLowerCase());
-      };
-      return (
-        <div className="mt-4 flex flex-col items-center gap-3">
-          <input value={value} onChange={e=>setValue(e.target.value)} placeholder="Votre réponse" className="border px-4 py-2 rounded-lg w-64 text-center" />
-          <button onClick={check} className="bg-indigo-600 text-white px-4 py-2 rounded-xl">Valider</button>
-        </div>
-      );
+    const Intro=({onStart})=>(<div className="bg-white/80 p-8 rounded-2xl shadow-lg text-center space-y-4"><h1 className="text-2xl font-bold">Quiz – Influence de l'Église</h1><p>{questions.length} questions</p><button onClick={onStart} className="bg-indigo-600 text-white px-4 py-2 rounded-xl">Commencer</button></div>);
+
+    function Result({score,total,onRecap,onRestart}){
+      return <div className="bg-white/80 p-8 rounded-2xl shadow-lg text-center space-y-4"><h1 className="text-2xl font-bold">Résultat</h1><p className="text-xl">{score}/{total}</p><div className="flex gap-4 justify-center"><button onClick={onRecap} className="bg-indigo-600 text-white px-4 py-2 rounded-xl">Récap</button><button onClick={onRestart} className="bg-green-600 text-white px-4 py-2 rounded-xl">Rejouer</button></div></div>;
     }
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<QuizApp />);
+    function Recap({recap,onRestart}){
+      return <div className="bg-white/80 p-8 rounded-2xl shadow-lg space-y-6 max-h-[90vh] overflow-auto"><h1 className="text-2xl font-bold text-center">Récapitulatif</h1><div className="space-y-4">{recap.map((r,i)=>(<div key={i} className="border-b pb-2"><p className="font-semibold">{i+1}. {r.question}</p><p>Votre réponse : <span className="font-medium">{r.user||<em>Aucune</em>}</span></p><p>Bonne réponse : <span className="font-medium">{r.correct}</span></p><p className={r.isCorrect?'text-green-700':'text-red-700'}>{r.isCorrect?'Correct':'Incorrect'}</p></div>))}</div><div className="text-center"><button onClick={onRestart} className="bg-green-600 text-white px-4 py-2 rounded-xl">Rejouer</button></div></div>;
+    }
+
+    function QuestionCard({q,index,total,onAnswer}){
+      const submit=(userAns,isOk)=>onAnswer(userAns,isOk);
+      return <div className="bg-white/80 p-8 rounded-2xl shadow-lg space-y-6"><div className="text-sm text-right">Question {index+1}/{total}</div><h2 className="text-lg font-semibold whitespace-pre-wrap">{q.q}</h2>{q.type==='mc'&&<MC q={q} submit={submit}/>}{q.type==='tf'&&<TF q={q} submit={submit}/>}{q.type==='fill'&&<Fill q={q} submit={submit}/>}</div>;
+    }
+
+    const MC=({q,submit})=>(<div className="flex flex-col gap-3 mt-4">{q.choices.map((c,i)=><button key={i} onClick={()=>submit(c,i===q.correct)} className="border rounded px-4 py-2 text-left hover:bg-indigo-100">{String.fromCharCode(97+i)}) {c}</button>)}</div>);
+    const TF=({q,submit})=>(<div className="flex gap-4 justify-center mt-4"><button onClick={()=>submit('Vrai',q.correct===true)} className="bg-green-600 text-white px-6 py-2 rounded-xl">Vrai</button><button onClick={()=>submit('Faux',q.correct===false)} className="bg-red-600 text-white px-6 py-2 rounded-xl">Faux</button></div>);
+    function Fill({q,submit}){
+      const [val,setVal]=React.useState('');
+      return <div className="mt-4 flex flex-col items-center gap-3"><input value={val} onChange={e=>setVal(e.target.value)} placeholder="Votre réponse" className="border px-4 py-2 rounded w-64 text-center"/><button onClick={()=>submit(val,softMatch(val,q.answer))} className="bg-indigo-600 text-white px-4 py-2 rounded-xl">Valider</button></div>;
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<QuizApp/>);
   </script>
 </body>
 </html>
