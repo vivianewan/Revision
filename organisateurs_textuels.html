@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Organisateurs textuels – Extraits littéraires</title>
+  <title>Organisateurs textuels – Exercice (2 catégories)</title>
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
@@ -14,149 +14,129 @@
 
   <script type="text/babel">
 /*******************************************************
- *  Extraits littéraires (domaine public)               *
- *  Organisateurs LIMITÉS aux notes fournies :          *
- *  - Temps                                             *
- *  - Opposition                                        *
- *  - Concession                                        *
- *  - Comparaison                                       *
+ *  Deux étiquettes seulement :                        *
+ *   - temps                                           *
+ *   - opp  (opposition / concession / comparaison)    *
+ *                                                     *
+ *  Banque = anciens + nouveaux extraits.              *
  *******************************************************/
 
-const CATEGORIES = [
-  {key:"temps", label:"Temps"},
-  {key:"opposition", label:"Opposition"},
-  {key:"concession", label:"Concession"},
-  {key:"comparaison", label:"Comparaison"}
+const CATEGORIES=[
+  {key:"temps",label:"Temps"},
+  {key:"opp",label:"Opp/Conc/Comp"}
 ];
 
-const BANK = [
+function t(word){return {word,cat:"temps"};}
+function o(word){return {word,cat:"opp"};}
+
+const BANK=[
+  // ANCIENS LITTÉRAIRES (convertis en 2 catégories)
   {
     source:"Victor Hugo – Les Misérables",
-    text:"Il pleuvait depuis l'aube; pourtant, Jean Valjean marchait d'un pas ferme, puis il pressa l'allure, comme s'il voulait semer les souvenirs amers qui le poursuivaient." ,
-    tags:[
-      {word:"pourtant",cat:"opposition"},
-      {word:"puis",cat:"temps"},
-      {word:"comme",cat:"comparaison"}
-    ]
+    text:"Il pleuvait depuis l'aube; pourtant, Jean Valjean marchait d'un pas ferme, puis il pressa l'allure, comme s'il voulait semer les souvenirs amers qui le poursuivaient.",
+    tags:[o("pourtant"),t("puis"),o("comme")]
   },
   {
     source:"Jules Verne – Le Tour du monde en 80 jours",
-    text:"Phileas Fogg consulta sa montre, ensuite il referma son carnet; bien que les retards se multiplient, il demeurait imperturbable." ,
-    tags:[
-      {word:"ensuite",cat:"temps"},
-      {word:"bien que",cat:"concession"}
-    ]
+    text:"Phileas Fogg consulta sa montre, ensuite il referma son carnet; bien que les retards se multiplient, il demeurait imperturbable.",
+    tags:[t("ensuite"),o("bien que")]
   },
   {
     source:"George Sand – La Mare au Diable",
-    text:"La nuit tombait doucement; cependant, les moissonneurs chantaient encore, à la différence de leurs chevaux qui se reposaient déjà." ,
-    tags:[
-      {word:"cependant",cat:"opposition"},
-      {word:"à la différence de",cat:"comparaison"}
-    ]
+    text:"La nuit tombait doucement; cependant, les moissonneurs chantaient encore, à la différence de leurs chevaux qui se reposaient déjà.",
+    tags:[o("cependant"),o("à la différence de")]
   },
   {
     source:"Alphonse Daudet – Lettres de mon moulin",
-    text:"Le mistral hurlait au-dessus des pins; néanmoins, la petite chèvre de Monsieur Seguin restait fière, puis elle escalada la montagne." ,
-    tags:[
-      {word:"néanmoins",cat:"opposition"},
-      {word:"puis",cat:"temps"}
-    ]
+    text:"Le mistral hurlait au-dessus des pins; néanmoins, la petite chèvre de Monsieur Seguin restait fière, puis elle escalada la montagne.",
+    tags:[o("néanmoins"),t("puis")]
   },
   {
     source:"Stendhal – Le Rouge et le Noir",
-    text:"Bien que le salon fût rempli de monde, Julien se sentait seul; plus tard, il s'approcha de la fenêtre." ,
-    tags:[
-      {word:"Bien que",cat:"concession"},
-      {word:"plus tard",cat:"temps"}
-    ]
+    text:"Bien que le salon fût rempli de monde, Julien se sentait seul; plus tard, il s'approcha de la fenêtre.",
+    tags:[o("Bien que"),t("plus tard")]
   },
   {
     source:"Guy de Maupassant – Contes de la Bécasse",
-    text:"Il était déjà tard; pourtant ils continuaient leur marche, comme si la fatigue ne les atteignait jamais." ,
-    tags:[
-      {word:"pourtant",cat:"opposition"},
-      {word:"comme",cat:"comparaison"}
-    ]
+    text:"Il était déjà tard; pourtant ils continuaient leur marche, comme si la fatigue ne les atteignait jamais.",
+    tags:[o("pourtant"),o("comme")]
   },
   {
     source:"Émile Zola – Germinal",
-    text:"Étienne avançait dans la galerie; tandis que ses camarades parlaient, il restait silencieux." ,
-    tags:[
-      {word:"tandis que",cat:"temps"}
-    ]
+    text:"Étienne avançait dans la galerie; tandis que ses camarades parlaient, il restait silencieux.",
+    tags:[o("tandis que")]
   },
   {
     source:"Marcel Proust – Du côté de chez Swann",
-    text:"Il demeura longtemps immobile; pourtant, son esprit vagabondait; bien que la cloche eût sonné, il ne bougea pas." ,
-    tags:[
-      {word:"pourtant",cat:"opposition"},
-      {word:"bien que",cat:"concession"}
-    ]
+    text:"Il demeura longtemps immobile; pourtant, son esprit vagabondait; bien que la cloche eût sonné, il ne bougea pas.",
+    tags:[o("pourtant"),o("bien que")]
+  },
+  // NOUVEAUX PARAGRAPHES P1-4
+  {
+    source:"Paragraphe 1 (création)",
+    text:"Au début, il faisait froid; puis le soleil parut; cependant, les voyageurs restaient prudents; d'un autre côté, en revanche, le guide avançait.",
+    tags:[t("Au début"),t("puis"),o("cependant"),o("d'un autre côté"),o("en revanche")]
+  },
+  {
+    source:"Paragraphe 2 (création)",
+    text:"Le lendemain, nous reprîmes la route; quelques mois plus tard, nous atteignîmes la capitale; pourtant, bien que fatigués, nous célébrâmes la victoire; à la différence de la veille, certes, la fête fut courte.",
+    tags:[t("Le lendemain"),t("quelques mois plus tard"),o("pourtant"),o("bien que"),o("à la différence de"),o("certes")]
+  },
+  {
+    source:"Paragraphe 3 (création)",
+    text:"Depuis ce jour-là, il voyage; de nos jours, il écrit ses mémoires; en 1967, il traversa l'océan; au cours du XXe siècle, il vécut mille vies; il y a de cela très longtemps, toutefois, il doutait encore; par contre, maintenant, il sourit.",
+    tags:[t("Depuis ce jour-là"),t("de nos jours"),t("en 1967"),t("au cours du XXe siècle"),t("il y a de cela très longtemps"),o("toutefois"),o("par contre")]
+  },
+  {
+    source:"Paragraphe 4 (création)",
+    text:"En tout cas, il décida de partir; alors que la pluie tombait, néanmoins, son espoir grandissait; contrairement à ses amis, il avançait.",
+    tags:[o("En tout cas"),o("alors que"),o("néanmoins"),o("contrairement à")]
   }
 ];
 
-function randomParagraph(){return BANK[Math.floor(Math.random()*BANK.length)];}
+function pick(){return BANK[Math.floor(Math.random()*BANK.length)];}
 
-function splitWithTags(text,tags){
-  const segments=[];
-  let pos=0;
-  tags.forEach((t,idx)=>{
-    const match=text.toLowerCase().indexOf(t.word.toLowerCase(),pos);
-    if(match!==-1){
-      segments.push({str:text.slice(pos,match), tag:null});
-      segments.push({str:t.word, tag:idx});
-      pos=match+t.word.length;
+function split(text,tags){
+  const segs=[];let pos=0;
+  tags.forEach((t,i)=>{
+    const m=text.toLowerCase().indexOf(t.word.toLowerCase(),pos);
+    if(m!==-1){
+      segs.push({txt:text.slice(pos,m),tag:null});
+      segs.push({txt:t.word,tag:i});
+      pos=m+t.word.length;
     }
   });
-  segments.push({str:text.slice(pos), tag:null});
-  return segments;
+  segs.push({txt:text.slice(pos),tag:null});
+  return segs;
 }
 
 function App(){
-  const [para,setPara]=React.useState(randomParagraph());
-  const [choices,setChoices]=React.useState(Array(para.tags.length).fill(""));
-  const [checked,setChecked]=React.useState(false);
-
-  const refresh=()=>{const p=randomParagraph();setPara(p);setChoices(Array(p.tags.length).fill(""));setChecked(false);} ;
-
-  const score = para.tags.reduce((s,t,i)=>s+(choices[i]===t.cat?1:0),0);
-
-  const segments = React.useMemo(()=>splitWithTags(para.text,para.tags),[para]);
+  const [para,setPara]=React.useState(pick());
+  const [ans,setAns]=React.useState(Array(para.tags.length).fill(""));
+  const [done,setDone]=React.useState(false);
+  const refresh=()=>{const p=pick();setPara(p);setAns(Array(p.tags.length).fill(""));setDone(false);};
+  const score=para.tags.reduce((s,t,i)=>s+(ans[i]===t.cat?1:0),0);
+  const segments=React.useMemo(()=>split(para.text,para.tags),[para]);
 
   return (
-    <div className="bg-white/80 backdrop-blur p-6 rounded-2xl shadow-lg space-y-6 max-h-[90vh] overflow-auto">
+    <div className="bg-white/80 p-6 rounded-2xl shadow-lg space-y-6 max-h-[90vh] overflow-auto">
       <h1 className="text-xl font-bold text-center">Organisateurs textuels</h1>
       <p className="text-center text-sm italic">{para.source}</p>
-
       <p className="leading-relaxed text-justify">
-        {segments.map((seg,idx)=>{
-          if(seg.tag===null) return <span key={idx}>{seg.str}</span>;
-          const correct = choices[seg.tag]===para.tags[seg.tag].cat;
-          return (
-            <span key={idx} className="inline-flex items-center mx-1">
-              <select
-                value={choices[seg.tag]}
-                onChange={e=>{const arr=[...choices];arr[seg.tag]=e.target.value;setChoices(arr);}}
-                className={`border rounded px-1 text-xs ${checked ? (correct? 'border-green-500':'border-red-500') : ''}`}
-              >
+        {segments.map((seg,i)=> seg.tag===null
+          ? <span key={i}>{seg.txt}</span>
+          : <span key={i} className="inline-flex items-center mx-1">
+              <select value={ans[seg.tag]} onChange={e=>{const a=[...ans];a[seg.tag]=e.target.value;setAns(a);}} className={`border rounded px-1 text-xs ${done?(ans[seg.tag]===para.tags[seg.tag].cat?'border-green-500':'border-red-500'):''}`}>
                 <option value="" disabled>---</option>
                 {CATEGORIES.map(c=> <option key={c.key} value={c.key}>{c.label}</option>)}
               </select>
-              <span className="font-semibold ml-1">{seg.str}</span>
+              <span className="font-semibold ml-1">{seg.txt}</span>
             </span>
-          );
-        })}
+        )}
       </p>
-
-      {!checked ? (
-        <button onClick={()=>setChecked(true)} className="bg-indigo-600 text-white px-4 py-2 rounded-xl block mx-auto">Vérifier</button>
-      ) : (
-        <div className="text-center space-y-4">
-          <p className="text-lg font-semibold">Score : {score} / {para.tags.length}</p>
-          <button onClick={refresh} className="bg-green-600 text-white px-4 py-2 rounded-xl">Nouvel extrait</button>
-        </div>
-      )}
+      {!done
+        ? <button onClick={()=>setDone(true)} className="bg-indigo-600 text-white px-4 py-2 rounded-xl block mx-auto">Vérifier</button>
+        : <div className="text-center space-y-2"><p className="font-semibold">Score : {score} / {para.tags.length}</p><button onClick={refresh} className="bg-green-600 text-white px-3 py-1 rounded-xl">Nouvel extrait</button></div>}
     </div>
   );
 }
