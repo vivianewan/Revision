@@ -1,0 +1,155 @@
+{
+  "meta": {
+    "id": "latin_week1",
+    "title": "Latin Week 1 基础",
+    "description": "入门语法与核心词汇；主格/宾格，第一/第二变格，动词现在时、未完成时"
+  },
+  "questions": [
+    {
+      "id": "Q1",
+      "type": "mcq",
+      "question": "“puella” 在句子 “puella aquam portat” 中的语法角色是什么？",
+      "choices": [
+        "主语（主格）",
+        "宾语（宾格）",
+        "与格（间接宾语）",
+        "属格（所有）"
+      ],
+      "answer": [
+        0
+      ],
+      "explanation": "puella 为主格单数，作主语；aquam 为宾格（受格）作宾语。",
+      "correct_feedback": "太棒了！你已经能用句子判断主格。",
+      "incorrect_feedback": "别急，找谓语动词 portat（她/他们携带），携带的对象 aquam 为宾格；主语就是 puella。"
+    },
+    {
+      "id": "Q2",
+      "type": "truefalse",
+      "question": "“portant” 是动词 porto 的现在时，第三人称复数。",
+      "answer": true,
+      "explanation": "porto（我携带）→ portat（他/她携带，3单）→ portant（他们携带，3复）。"
+    },
+    {
+      "id": "Q3",
+      "type": "mcq",
+      "question": "名词 “amicus”（朋友） 的属格单数是？",
+      "choices": [
+        "amicae",
+        "amici",
+        "amico",
+        "amicum"
+      ],
+      "answer": [
+        1
+      ],
+      "explanation": "第二变格阳性：-us, -i, -o, -um, -o；属格单数为 -i → amici。"
+    },
+    {
+      "id": "Q4",
+      "type": "mcq",
+      "question": "下列哪些是第一变格的主格复数？（可多选）",
+      "choices": [
+        "puellae",
+        "insulae",
+        "nautae",
+        "amici",
+        "servi"
+      ],
+      "answer": [
+        0,
+        1,
+        2
+      ],
+      "explanation": "第一变格复数主格多为 -ae；nautae 虽为第一变格但语义是“水手”（常见阳性）。"
+    },
+    {
+      "id": "Q5",
+      "type": "fill",
+      "question": "将 “nautae sunt in insula” 翻译成英文：",
+      "answer_text": [
+        "the sailors are on the island",
+        "sailors are on the island"
+      ],
+      "explanation": "nautae（水手们，主格复数）+ sunt（是/在）+ in insula（在岛上）。"
+    },
+    {
+      "id": "Q6",
+      "type": "fill",
+      "question": "将 “puellam” 翻译成英文（直接宾语形式）：",
+      "answer_text": [
+        "the girl",
+        "girl"
+      ],
+      "explanation": "puellam 为第一变格宾格单数（-am），常作直接宾语。"
+    },
+    {
+      "id": "Q7",
+      "type": "mcq",
+      "question": "动词 sum（是）的第三人称复数是？",
+      "choices": [
+        "est",
+        "sumus",
+        "estis",
+        "sunt"
+      ],
+      "answer": [
+        3
+      ],
+      "explanation": "sum（我）/ es（你）/ est（他她）/ sumus（我们）/ estis（你们）/ sunt（他们）。"
+    },
+    {
+      "id": "Q8",
+      "type": "truefalse",
+      "question": "“aquam portat puella” 与 “puella aquam portat” 的意义相同。",
+      "answer": true,
+      "explanation": "拉丁语靠词尾标记语法关系，词序较自由；语义以词形（格）为主。"
+    },
+    {
+      "id": "Q9",
+      "type": "mcq",
+      "question": "选择与 “servus” 同一变格且主格单数结尾相同的词：",
+      "choices": [
+        "amicus",
+        "agricola",
+        "puella",
+        "templum"
+      ],
+      "answer": [
+        0
+      ],
+      "explanation": "servus 与 amicus 都是第二变格阳性（-us）；agricola 第一变格，templum 第二变格中性。"
+    },
+    {
+      "id": "Q10",
+      "type": "fill",
+      "question": "将 “nautam videt puella” 翻译成英文：",
+      "answer_text": [
+        "the girl sees the sailor",
+        "girl sees the sailor"
+      ],
+      "explanation": "nautam（宾格单数：水手）+ videt（看见，3单）+ puella（主格单数：女孩）。柔性词序。"
+    },
+    {
+      "id": "Q11",
+      "type": "mcq",
+      "question": "未完成时（imperfect）第三人称单数通常用哪个词尾？",
+      "choices": [
+        "-bat",
+        "-bit",
+        "-bant",
+        "-bo"
+      ],
+      "answer": [
+        0
+      ],
+      "explanation": "未完成时 3 单通常为 -bat（例如 portabat = 他/她当时正在携带）。"
+    },
+    {
+      "id": "Q12",
+      "type": "truefalse",
+      "question": "“insulae” 只可能是主格复数。",
+      "answer": false,
+      "explanation": "第一变格 -ae 也可以是属格单数或与格单数，需靠语境判断。"
+    }
+  ]
+}
