@@ -1,323 +1,104 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="zh-Hans">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cartes éclair – Christianisation de l’Occident</title>
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>拉丁语冲刺测验 | Latin Sprint Quizzes</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
-<body class="bg-gradient-to-br from-yellow-50 to-rose-100 min-h-screen flex items-center justify-center p-4">
-  <div id="root" class="w-full max-w-2xl"></div>
+<body>
+  <header class="site-header">
+    <h1>拉丁语冲刺测验 <span class="sub">Latin Sprint Quizzes</span></h1>
+    <nav>
+      <a href="#" id="link-home" class="active">练习</a>
+      <a href="#" id="link-how">使用说明</a>
+    </nav>
+  </header>
 
-  <script type="text/babel">
-    // === 200 cartes : 100 issues de la capsule + 100 issues du nouveau set ===
-    const flashcards = [
-      // --- Première série (1‑100) déjà présente ---
-      {q: "1 – Quel édit de 311 met un terme officiel à la « Grande persécution » ?", a: "L’édit de tolérance de Galère (Sérdique)."},
-      {q: "2 – Qui signe l’édit de Milan en 313 ?", a: "Constantin Iᵉʳ et Licinius."},
-      {q: "3 – Citez les deux mesures majeures de l’édit de Milan.", a: "Liberté de culte et restitution des biens confisqués aux chrétiens."},
-      {q: "4 – Quelle bataille (312) convainc Constantin du soutien du Dieu chrétien ?", a: "La bataille du pont Milvius."},
-      {q: "5 – Qu’appelle‑t‑on le césaropapisme ?", a: "L’ingérence ou l’autorité de l’empereur dans les affaires de l’Église."},
-      {q: "6 – Quelle hérésie domine encore l’Orient après 313 ?", a: "L’arianisme."},
-      {q: "7 – Quel symbole de la foi est rédigé au concile de Nicée ?", a: "Le Credo de Nicée."},
-      {q: "8 – En quelle année se tient le premier concile œcuménique ?", a: "325."},
-      {q: "9 – Quel empereur fait du christianisme la religion officielle en 380 ?", a: "Théodose Iᵉʳ (édit de Thessalonique)."},
-      {q: "10 – Quel concile de 381 confirme la condamnation de l’arianisme ?", a: "Le concile de Constantinople I."},
+  <main id="view-home" class="view active">
+    <section class="controls">
+      <div class="control-group">
+        <label for="pack-select">选择题库：</label>
+        <select id="pack-select"></select>
+      </div>
+      <div class="control-group">
+        <label for="mode-select">模式：</label>
+        <select id="mode-select">
+          <option value="practice">练习（即时反馈）</option>
+          <option value="test">测试（最后统一反馈）</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label for="qcount">题量：</label>
+        <input id="qcount" type="number" min="5" max="100" value="10" />
+      </div>
+      <div class="control-group">
+        <button id="btn-start">开始</button>
+        <button id="btn-resume" class="secondary">从上次继续</button>
+      </div>
+    </section>
 
-      {q: "11 – Quel titre porte l’évêque de Rome dès le IVᵉ siècle ?", a: "Pape (pontifex maximus transféré symboliquement)."},
-      {q: "12 – Quel rôle civil les évêques jouent‑ils dans les villes ?", a: "Administration urbaine, justice locale et assistance sociale."},
-      {q: "13 – À quoi servent les conciles œcuméniques ?", a: "Unifier la doctrine et condamner les hérésies."},
-      {q: "14 – Citez deux conciles majeurs postérieurs à Nicée mentionnés dans la capsule.", a: "Constantinople 381 et Chalcédoine 451."},
-      {q: "15 – Qu’est‑ce qu’un patriarche ?", a: "Un évêque de rang supérieur siégeant dans une grande métropole (Rome, Alexandrie, Antioche, etc.)."},
-      {q: "16 – Quelle langue liturgique domine l’Occident après 400 ?", a: "Le latin."},
-      {q: "17 – Comment appelle‑t‑on l’ensemble des lois ecclésiastiques ?", a: "Le droit canon."},
-      {q: "18 – Quel privilège fiscal Théodose accorde‑t‑il aux églises ?", a: "L’exemption d’impôts sur leurs biens fonciers."},
-      {q: "19 – Quelle nouvelle institution judiciaire naît avec les tribunaux épiscopaux ?", a: "La justice rendue par les évêques pour certaines affaires civiles."},
-      {q: "20 – Quel office chanté rythme les journées des moines ?", a: "La liturgie des Heures."},
+    <section id="quiz" class="quiz hidden">
+      <div class="quiz-topbar">
+        <div>进度：<span id="progress">0/0</span></div>
+        <div>分数：<span id="score">0</span></div>
+      </div>
+      <div id="question-container"></div>
+      <div class="actions">
+        <button id="btn-submit">提交答案</button>
+        <button id="btn-next" class="secondary">下一题</button>
+        <button id="btn-show" class="ghost">显示答案</button>
+      </div>
+      <div id="feedback" class="feedback"></div>
+    </section>
 
-      {q: "21 – Qui est considéré comme père du monachisme égyptien ?", a: "Antoine le Grand."},
-      {q: "22 – Quelle règle de vie communautaire écrit Pacôme vers 320 ?", a: "La règle cénobitique."},
-      {q: "23 – En quelle période saint Benoît rédige‑t‑il sa règle ?", a: "Vers 530‑540."},
-      {q: "24 – Quel principe latin résume la règle bénédictine ?", a: "\"Ora et labora\" (prie et travaille)."},
-      {q: "25 – Quel manuscrit biblique célèbre est copié en Northumbrie au VIIᵉ siècle ?", a: "Le Codex Amiatinus."},
-      {q: "26 – Quel est le rôle des scriptoria monastiques ?", a: "Copier et diffuser les textes antiques et chrétiens."},
-      {q: "27 – Quel monastère irlandais devient un centre missionnaire majeur ?", a: "Iona (puis Lindisfarne)."},
-      {q: "28 – Quel ordre féminin naît autour de sainte Scholastique ?", a: "Les moniales bénédictines."},
-      {q: "29 – Quel roi wisigoth fonde un monastère à Ripoll au IXᵉ siècle ?", a: "Guifred le Velu."},
-      {q: "30 – Comment s’appelle la vie monastique solitaire opposée au cénobitisme ?", a: "L’érémitisme."},
+    <section id="results" class="results hidden">
+      <h2>结果</h2>
+      <p>得分：<strong id="final-score">0</strong> / <span id="final-total">0</span></p>
+      <div id="review"></div>
+      <div class="actions">
+        <button id="btn-retry-wrong">重练错题</button>
+        <button id="btn-restart" class="secondary">重新开始</button>
+        <button id="btn-export" class="ghost">导出结果（JSON）</button>
+      </div>
+    </section>
+  </main>
 
-      {q: "31 – Quel évêque traduit la Bible en gotique vers 341 ?", a: "Wulfila (Ulfilas)."},
-      {q: "32 – Quelle forme de christianisme les Goths adoptent‑ils d’abord ?", a: "Le christianisme arien."},
-      {q: "33 – Quel manuscrit somptueux est associé à la Bible gotique ?", a: "Le Codex Argenteus (argent codex)."},
-      {q: "34 – Qui est surnommé ‘apôtre des Allemands’ ?", a: "Saint Boniface."},
-      {q: "35 – Quel arbre sacré germanique Boniface abat‑il ?", a: "Le chêne de Thor à Géismar."},
-      {q: "36 – Quelle ville devient son archevêché en 747 ?", a: "Mayence."},
-      {q: "37 – Quel souverain franc soutient Boniface ?", a: "Charles Martel."},
-      {q: "38 – En quelle année Boniface est‑il martyrisé en Frise ?", a: "754."},
-      {q: "39 – Quelle abbaye fondée par Boniface en 744 est un centre d’études ?", a: "Fulda."},
-      {q: "40 – Quel pape envoie Boniface en Germanie ?", a: "Grégoire II."},
-
-      {q: "41 – Que signifie le terme missus dans les royaumes francs ?", a: "Un envoyé royal chargé de missions administratives et religieuses."},
-      {q: "42 – Quelle tribu saxonne est convertie de force par Charlemagne ?", a: "Les Saxons de Widukind."},
-      {q: "43 – Quel capitulaire de 782 impose le baptême aux Saxons ?", a: "Le Capitulare de partibus Saxoniae."},
-      {q: "44 – Quel concile franc de 777 interdit les sacrifices humains ?", a: "Le concile de Paderborn."},
-      {q: "45 – Quel clerc anglo‑saxon succède à Boniface comme archevêque ?", a: "Saint Lull."},
-
-      {q: "46 – Date traditionnelle du baptême de Clovis ?", a: "Nuit de Noël 496."},
-      {q: "47 – Quel évêque baptise Clovis ?", a: "Rémi de Reims."},
-      {q: "48 – Quelle reine pousse Clovis à la foi catholique ?", a: "Clotilde."},
-      {q: "49 – Quel miracle est associé à la bataille de Tolbiac ?", a: "La victoire attribuée à l’invocation du Dieu chrétien."},
-      {q: "50 – Quel concile de 511 consolide l’alliance roi‑évêques ?", a: "Le concile d’Orléans."},
-      {q: "51 – Quel moine est envoyé en 597 pour évangéliser les Anglo‑Saxons ?", a: "Augustin de Cantorbéry."},
-      {q: "52 – Quel roi du Kent accueille Augustin ?", a: "Æthelberht Iᵉʳ."},
-      {q: "53 – Première cathédrale fondée par Augustin ?", a: "Christ Church de Cantorbéry."},
-      {q: "54 – Quel synode de 664 adopte la liturgie romaine en Angleterre ?", a: "Le synode de Whitby."},
-      {q: "55 – Quel érudit anglo‑saxon compile l’Histoire ecclésiastique (731) ?", a: "Bède le Vénérable."},
-      {q: "56 – Quel centre scripturaire anglais est lié à Bède ?", a: "Wearmouth‑Jarrow."},
-      {q: "57 – Quel saint norumbrien est populaire pour la reconversion post‑peste ?", a: "Saint Cuthbert."},
-      {q: "58 – Qu’est‑ce que l’art insulaire ?", a: "Style artistique celto‑chrétien (manuscrits de Kells, Lindisfarne)."},
-      {q: "59 – Quelle fête païenne de printemps est christianisée en Pâques ?", a: "La fête d’Éostre (anglo‑saxonne)."},
-      {q: "60 – Quel roi northumbrien introduit le sacre royal chrétien ?", a: "Oswiu."},
-
-      {q: "61 – Quel roi danois se fait baptiser vers 965 ?", a: "Harald Blåtand (Bluetooth)."},
-      {q: "62 – Sur quel monument rune‑chrétien proclame‑t‑il sa foi ?", a: "La grande pierre de Jelling."},
-      {q: "63 – Quel missionnaire allemand est surnommé ‘apôtre du Nord’ ?", a: "Ansgar."},
-      {q: "64 – Quelle ville suédoise devient archevêché en 1164 ?", a: "Uppsala."},
-      {q: "65 – Quel roi norvégien impose la foi chrétienne par la loi ?", a: "Olaf II Haraldsson."},
-      {q: "66 – En quelle année l’Islande adopte‑t‑elle officiellement le christianisme ?", a: "999/1000 (Althing)."},
-      {q: "67 – Quel explorateur islandais porte la foi au Groenland ?", a: "Leif Erikson."},
-      {q: "68 – Qu’appelle‑t‑on la christianisation ‘par le haut’ ?", a: "Conversion des élites avant celle du peuple."},
-      {q: "69 – Quelle forme de croix se répand chez les Vikings convertis ?", a: "La croix celtique ou latine stylisée."},
-      {q: "70 – Nombre de sagas relatant la conversion de l’Islande ?", a: "Notamment la Saga de Njáll."},
-      {q: "71 – Qu’est‑ce qu’une église stavkirke ?", a: "Église en bois debout de Norvège médiévale."},
-      {q: "72 – Quel concile scandinave de 1123 fixe la dîme obligatoire ?", a: "Le concile de Lund."},
-      {q: "73 – Quel port de commerce danois devient siège épiscopal ?", a: "Ribe."},
-      {q: "74 – Quelle stèle funéraire témoigne du syncrétisme viking‑chrétien ?", a: "Les stèles de Gotland."},
-      {q: "75 – Quel royaume nordique adopte le concept de roi ‘par la grâce de Dieu’ au XIIᵉ s. ?", a: "Le Danemark sous Valdemar I."},
-
-      {q: "76 – Quelle fête païenne est baptisée Noël ?", a: "Le solstice d’hiver (Yule)."},
-      {q: "77 – Quel capitulaire de 789 impose une école dans chaque monastère ?", a: "L’Admonitio Generalis de Charlemagne."},
-      {q: "78 – Qu’est‑ce que la diaconie dans l’Église ?", a: "Le service de charité envers les pauvres et les malades."},
-      {q: "79 – Nom de la taxe ecclésiale constituant 10 % des revenus ?", a: "La dîme."},
-      {q: "80 – Comment appelle‑t‑on un document officiel scellé par le pape ?", a: "Une bulle pontificale."},
-      {q: "81 – Quelle lettre pontificale Grégoire I envoie‑t‑il à Augustin ?", a: "La Responsio ad Augustinum."},
-      {q: "82 – Qu’est‑ce qu’un reliquaire ?", a: "Coffret ou châsse contenant les reliques d’un saint."},
-      {q: "83 – Quel chant liturgique se généralise en Occident médiéval ?", a: "Le chant grégorien."},
-      {q: "84 – Quel concile de 1215 fixe le mariage comme sacrement ?", a: "Le IVᵉ concile de Latran."},
-      {q: "85 – Que signifie cléricature ?", a: "Entrée dans l’état clerical, prise d’ordre."},
-      {q: "86 – Qu’est‑ce qu’une église basilicale ?", a: "Bâtiment de plan rectangulaire inspiré des basiliques civiles romaines."},
-      {q: "87 – Quelle innovation architecturale du gothique permet de hauts voûtes ?", a: "L’arc brisé (ogive)."},
-      {q: "88 – Sous quel savant la minuscule caroline est‑elle normalisée ?", a: "Alcuin d’York."},
-      {q: "89 – Quelle réforme monastique est lancée à Cluny au Xᵉ siècle ?", a: "La réforme clunisienne."},
-      {q: "90 – Quel manuscrit illustre l’art insulaire irlandais vers 800 ?", a: "Le Livre de Kells."},
-
-      {q: "91 – Quel événement de 800 symbolise l’union du trône et de l’autel ?", a: "Le couronnement impérial de Charlemagne par le pape Léon III."},
-      {q: "92 – Comment se nomme la théorie du ‘roi par la grâce de Dieu’ ?", a: "La théocratie royale."},
-      {q: "93 – Quelle langue devient obligatoire pour la liturgie carolingienne ?", a: "Le latin normalisé."},
-      {q: "94 – Quel alphabet est diffusé par la mince capitale caroline ?", a: "La minuscule caroline."},
-      {q: "95 – Quel concile de 843 rétablit le culte des images à Byzance ?", a: "Le concile de Constantinople III (triomphe de l’iconodulie)."},
-      {q: "96 – Quel roi germanique reçoit la couronne impériale en 962 ?", a: "Otton Iᵉʳ."},
-      {q: "97 – Comment appelle‑t‑on la nomination des évêques par un laïc ?", a: "L’investiture laïque."},
-      {q: "98 – Quelle réforme grégorienne de 1075 condamne la simonie ?", a: "Le Dictatus Papae de Grégoire VII."},
-      {q: "99 – Quel traité de 1122 met fin à la querelle des Investitures ?", a: "Le concordat de Worms."},
-      {q: "100 – Quel pape lance la première croisade en 1095 ?", a: "Urbain II (concile de Clermont)."},
-
-      // --- Deuxième série (101‑200) : nouvelles Q/R fournies par l'utilisateur ---
-      {q: "101 – Quelle période historique caractérise l'Europe vers l'an 1000 ?", a: "Vers l'an 1000, l'Europe est en plein cœur du Moyen Âge."},
-      {q: "102 – Quelle grande institution politique s'est effondrée en 476 en Occident ?", a: "L'Empire romain s'est effondré définitivement en 476 pour sa partie occidentale."},
-      {q: "103 – Quelle est la principale caractéristique de l'Europe après la chute de Rome concernant son organisation politique ?", a: "Le territoire de l'Europe est divisé en plusieurs entités politiques distinctes après la chute de Rome."},
-      {q: "104 – Nommez deux exemples de royaumes distincts en Europe vers l'an 1000.", a: "Le royaume des Francs ou le royaume d'Angleterre."},
-      {q: "105 – Malgré leurs différences, quel est le point commun religieux entre ces royaumes d'Europe ?", a: "Leur religion commune est le christianisme."},
-      {q: "106 – Sur quel personnage est basée la religion chrétienne ?", a: "Le christianisme est basé sur le message de Jésus de Nazareth."},
-      {q: "107 – Où et quand est né Jésus de Nazareth ?", a: "Jésus de Nazareth est né à l'époque des Romains, à Bethléem en Judée."},
-      {q: "108 – Quel âge avait Jésus lorsqu'il a commencé à prêcher la Parole de Dieu ?", a: "Il avait 30 ans."},
-      {q: "109 – Par qui Jésus était-il accompagné lorsqu'il parcourait son pays pour prêcher ?", a: "Il était accompagné de 12 apôtres."},
-      {q: "110 – Quel surnom a été donné à Jésus et que signifie-t-il ?", a: "Il a été surnommé Jésus-Christ, ce qui signifie l'Envoyé de Dieu."},
-      {q: "111 – Comment les autorités romaines percevaient-elles Jésus au début du christianisme ?", a: "Les autorités romaines percevaient Jésus comme un agitateur dont il fallait se débarrasser."},
-      {q: "112 – Quel âge avait Jésus lorsqu'il fut crucifié ?", a: "Il fut crucifié à l'âge de 33 ans."},
-      {q: "113 – Comment les premiers chrétiens pratiquaient-ils leur religion après la mort de Jésus ?", a: "Les premiers chrétiens se cachaient et pratiquaient leur religion dans l'illégalité."},
-      {q: "114 – Quelles étaient les persécutions subies par les chrétiens sous l'Empire romain ?", a: "Les autorités romaines les massacraient ou les jetaient dans des fosses aux lions lors des jeux de cirque."},
-      {q: "115 – Quel empereur romain a légalisé le christianisme au IVe siècle ?", a: "L'empereur Constantin a légalisé le christianisme au IVe siècle."},
-      {q: "116 – Que sont devenues les assemblées d'évêques une fois le christianisme légalisé ?", a: "L'Église pouvait alors convoquer des conciles, des assemblées d'évêques pour préciser le dogme religieux."},
-      {q: "117 – Quel empereur romain a fait du christianisme la religion officielle de l'Empire romain ?", a: "Plus tard au cours du même siècle, Théodose Iᵉʳ a fait du christianisme la religion officielle de l'Empire romain."},
-      {q: "118 – Quel impact la légalisation puis l'officialisation du christianisme ont-elles eu sur l'Église ?", a: "Cela a donné à l'Église encore plus d'influence."},
-      {q: "119 – Qu'est-ce qui est considéré comme un bouleversement politique majeur mais a peu changé pour l'Église ?", a: "La chute de l'Empire romain."},
-      {q: "120 – L'Église a-t-elle survécu à la chute de l'Empire romain ?", a: "Oui, elle est une des rares institutions de l'Empire romain qui a survécu à sa chute."},
-      {q: "121 – Comment l'Église a-t-elle gagné encore plus d'influence après la chute de Rome ?", a: "Au fur et à mesure que les rois germaniques se faisaient baptiser."},
-      {q: "122 – Nommez un roi germanique dont la conversion a renforcé l'influence de l'Église.", a: "Clovis, le roi des Francs."},
-      {q: "123 – Quelle était la conséquence de la conversion des rois germaniques pour leurs peuples ?", a: "Ces rois germaniques, en devenant chrétiens, obligeaient par le fait même leur peuple à devenir chrétiens eux aussi."},
-      {q: "124 – Quelle langue romaine est restée la langue officielle de l'Église catholique pendant très longtemps ?", a: "Le latin."},
-      {q: "125 – Sur qui la papauté s'est-elle appuyée au 8e siècle pour poursuivre la christianisation de l'Europe ?", a: "Elle s'est appuyée sur Charlemagne, le puissant roi des Francs."},
-      {q: "126 – Quel titre Charlemagne a-t-il reçu du pape Léon III ?", a: "Il a été sacré empereur par le pape Léon III."},
-      {q: "127 – Que garantissait l'alliance entre l'Église et Charlemagne ?", a: "L'Église s'assurait que le christianisme serait défendu partout dans l'empire de Charlemagne."},
-      {q: "128 – Quel type d'institutions, composées de moines, a contribué à diffuser le christianisme au Moyen Âge ?", a: "Les ordres monastiques."},
-      {q: "129 – Où les moines des ordres monastiques choisissent-ils de vivre en communauté ?", a: "Ils choisissent de vivre en communauté dans un monastère."},
-      {q: "130 – Quelles sont les deux valeurs chrétiennes importantes pour les moines ?", a: "La charité et le sacrifice."},
-      {q: "131 – Quel vœu la plupart des moines font-ils pour mener à bien la christianisation ?", a: "Ils font vœu de pauvreté."},
-      {q: "132 – Comment est structurée l'Église pour mener à bien la christianisation ?", a: "L'Église s'est dotée de plusieurs institutions très hiérarchisées."},
-      {q: "133 – Qui est le chef de l'Église catholique ?", a: "Le pape."},
-      {q: "134 – Pourquoi le pape est-il considéré comme le chef de l'Église ?", a: "Parce qu'il est le successeur de Saint-Pierre."},
-      {q: "135 – Qui assiste le pape pour diriger le clergé ?", a: "Les cardinaux."},
-      {q: "136 – Comment appelle-t-on l'ensemble de ceux qui occupent une fonction dans l'Église ?", a: "Le clergé."},
-      {q: "137 – Quels sont les deux types de clergé dans l'Église catholique ?", a: "Le clergé régulier et le clergé séculier."},
-      {q: "138 – De quoi est composé le clergé régulier ?", a: "Le clergé régulier est composé des ordres monastiques."},
-      {q: "139 – Qui dirige le clergé séculier ?", a: "Le clergé séculier est dirigé par les évêques."},
-      {q: "140 – De quoi les évêques sont-ils en charge ?", a: "Ils sont en charge d'un diocèse."},
-      {q: "141 – À quoi correspond généralement un diocèse ?", a: "À une ville ou à une région rurale."},
-      {q: "142 – Qui est en charge de l'administration des paroisses ?", a: "Les prêtres."},
-      {q: "143 – Quelle est la conséquence de la chute de l'Empire romain sur la structure politique de l'Europe ?", a: "La structure politique de l'Europe a complètement changé."},
-      {q: "144 – Comment était le territoire de l'Empire romain avant sa chute, comparé au Moyen Âge ?", a: "Le vaste territoire de l'Empire romain était autrefois uni sous un même état, mais est morcelé au Moyen Âge en plusieurs royaumes distincts."},
-      {q: "145 – Quel était le pouvoir des rois au Moyen Âge ?", a: "Les rois avaient peu de pouvoir."},
-      {q: "146 – Que concédaient les rois aux grands seigneurs en échange de leur aide militaire ?", a: "De grands domaines appelés fiefs."},
-      {q: "147 – Que devaient jurer les grands seigneurs au roi en plus de leur aide militaire ?", a: "Fidélité."},
-      {q: "148 – Comment les fiefs étaient-ils ensuite redistribués ?", a: "Les seigneurs concédaient à leur tour des parties de leur fief à d'autres seigneurs plus petits selon les mêmes règles."},
-      {q: "149 – Comment s'appelle le système social de dépendance entre un suzerain et son vassal ?", a: "Le système féodal."},
-      {q: "150 – En échange de quoi les paysans se soumettaient-ils aux seigneurs locaux en campagne ?", a: "En échange de la sécurité et d'une tenure."},
-      {q: "151 – Qu'est-ce qu'une tenure pour un paysan ?", a: "Une terre qu'il peut cultiver."},
-      {q: "152 – Que fait le seigneur pour protéger les paysans ?", a: "Il fait construire un château fort."},
-      {q: "153 – À quoi sert le château fort en plus d'être la résidence du seigneur ?", a: "Il sert à accueillir les villageois qui viennent s'y réfugier en cas d'attaque."},
-      {q: "154 – Quels types de devoirs les seigneurs et les paysans ont-ils les uns envers les autres ?", a: "Des devoirs réciproques."},
-      {q: "155 – Quelles sont les obligations des paysans envers leur seigneur en échange de leur terre ?", a: "Ils doivent payer des impôts (en argent ou en nature), faire leur service militaire et effectuer des corvées."},
-      {q: "156 – Donnez un exemple de corvée que les paysans devaient effectuer pour le seigneur.", a: "Cultiver des terres que le seigneur se réserve pour lui-même."},
-      {q: "157 – En plus des obligations envers le seigneur, quelles obligations le paysan doit-il aussi remplir ?", a: "Ses obligations envers l'Église."},
-      {q: "158 – Quel impôt le paysan doit-il payer pour financer les activités de l'Église ?", a: "La dîme."},
-      {q: "159 – Dans quels cas les paysans devaient-ils payer des redevances seigneuriales à l'Église ?", a: "Lorsque l'Église administrait aussi des terres agricoles."},
-      {q: "160 – Comment les grands penseurs du système féodal voyaient-ils la société idéale du Moyen Âge ?", a: "Comme une société divisée en trois ordres."},
-      {q: "161 – Quel est le rôle du premier groupe, \"ceux qui prient\" ?", a: "Leur rôle est de prier Dieu afin d'assurer à tous la vie éternelle."},
-      {q: "162 – De qui est composé le groupe \"ceux qui prient\" ?", a: "Des membres du clergé."},
-      {q: "163 – Qui compose le deuxième groupe, \"ceux qui combattent\" ?", a: "Les seigneurs ou la noblesse."},
-      {q: "164 – Quel est le rôle du groupe \"ceux qui combattent\" ?", a: "Leur rôle est de défendre les deux autres ordres de la société."},
-      {q: "165 – Comment certains seigneurs plus fortunés pouvaient-ils se distinguer au combat ?", a: "Ils pouvaient se procurer une armure et se faire chevalier, combattant à cheval."},
-      {q: "166 – Qui compose le troisième groupe, \"ceux qui travaillent\" ?", a: "Les artisans et les paysans."},
-      {q: "167 – Quel est le rôle du groupe \"ceux qui travaillent\" ?", a: "Leur rôle est de travailler à faire vivre les deux autres ordres de la société."},
-      {q: "168 – Quelles sont les deux catégories de paysans au Moyen Âge ?", a: "Les vilains (paysans libres) ou les serfs (s'ils appartiennent à un seigneur)."},
-      {q: "169 – Quel est un symbole important de la présence de la religion chrétienne durant la période médiévale ?", a: "La cathédrale."},
-      {q: "170 – Qu'est-ce qu'une cathédrale ?", a: "Une église où siège un évêque."},
-      {q: "171 – Quelles sont les fonctions d'une cathédrale en plus d'être un lieu de prière et de culte ?", a: "Elle peut servir de lieu de réunion, de représentations théâtrales religieuses et d'école."},
-      {q: "172 – Que sont devenues les écoles des cathédrales vers le 12ᵉ siècle ?", a: "Elles sont devenues les premières universités."},
-      {q: "173 – Quelles matières étaient enseignées dans ces écoles par les membres du clergé ?", a: "Le dogme ou la théologie, par exemple."},
-      {q: "174 – Quelles innovations architecturales importantes ont permis de rendre les cathédrales plus solides ?", a: "Les voûtes à croisées d'ogives et les arcs-boutants."},
-      {q: "175 – Quelles sont les fonctions des monastères en plus d'être un lieu de résidence et de prière pour les moines ?", a: "Ils peuvent servir de bibliothèque, d'école et offrir l'hospitalité."},
-      {q: "176 – Quel type de livres religieux trouvait-on dans les bibliothèques des monastères ?", a: "Des livres religieux comme la Bible."},
-      {q: "177 – Comment les livres étaient-ils copiés dans les monastères au Moyen Âge ?", a: "Ils étaient copiés à la main par les moines, car l'imprimerie n'existait pas encore."},
-      {q: "178 – À qui étaient essentiellement destinées les écoles des monastères ?", a: "Aux jeunes qui voudraient devenir eux-mêmes des religieux."},
-      {q: "179 – À qui les monastères offraient-ils l'hospitalité ?", a: "Aux fidèles qui faisaient leur chemin vers des lieux de pèlerinage."},
-      {q: "180 – Pourquoi les chrétiens faisaient-ils de longs et pénibles voyages vers des lieux sacrés ?", a: "Dans l'espoir de faire pénitence ou d'obtenir une faveur grâce aux supposées reliques de personnes saintes."},
-      {q: "181 – Nommez un lieu de pèlerinage important en Espagne au Moyen Âge.", a: "Compostelle."},
-      {q: "182 – Quel apôtre de Jésus le tombeau de Compostelle est-il supposé contenir, selon certains ?", a: "Le tombeau de Jacques, un des apôtres de Jésus."},
-      {q: "183 – Quel est un autre lieu de pèlerinage important du Moyen Âge ?", a: "Jérusalem."},
-      {q: "184 – Pourquoi Jérusalem était-elle un lieu de pèlerinage important ?", a: "C'est là où Jésus a été crucifié par les Romains."},
-      {q: "185 – Qui contrôlait les Terres Saintes (où Jésus est né et a vécu) vers l'an 1000 ?", a: "Les musulmans."},
-      {q: "186 – Qui est le prophète fondateur de l'Islam ?", a: "Le prophète Mahomet."},
-      {q: "187 – Dans quelles régions l'Islam a-t-il connu une expansion importante depuis le 7ᵉ siècle ?", a: "Surtout du côté de l'Afrique du Nord et du Moyen-Orient."},
-      {q: "188 – Où l'expansion de l'Islam s'est-elle arrêtée en Europe ?", a: "En Espagne."},
-      {q: "189 – Quel événement militaire a été appelé par la papauté pour contrer l'expansion de l'Islam en Orient ?", a: "Les Croisades."},
-      {q: "190 – Qui conduisait ces guerres saintes malgré l'appel de la papauté ?", a: "Les souverains européens."},
-      {q: "191 – Entre quels siècles les Croisades ont-elles été organisées ?", a: "Entre le 11ᵉ et le 13ᵉ siècle."},
-      {q: "192 – Quel était l'objectif principal des Croisades ?", a: "Libérer Jérusalem de la présence musulmane."},
-      {q: "193 – Combien de Croisades y a-t-il eu en deux siècles ?", a: "Huit Croisades."},
-      {q: "194 – Les expéditions militaires des Croisades ont-elles atteint leur objectif principal de libérer le tombeau du Christ ?", a: "Non, elles furent un échec."},
-      {q: "195 – Quelle conséquence économique importante les Croisades ont-elles eue pour l'Europe ?", a: "Elles ont permis de tisser des liens commerciaux avec l'Orient."},
-      {q: "196 – Citez trois exemples de produits encore inconnus en Europe rapportés d'Orient grâce aux Croisades.", a: "Des pierres précieuses, des tissus ou des épices."},
-      {q: "197 – Quel autre impact, en plus de l'impact économique, les Croisades ont-elles eu ?", a: "Un impact culturel important."},
-      {q: "198 – Quelles nouvelles connaissances les Européens ont-ils acquises grâce aux contacts avec les commerçants arabes durant les Croisades ?", a: "Notamment au niveau des mathématiques."},
-      {q: "199 – Quel est un des points communs entre les peuples d'Occident au Moyen Âge, malgré le morcellement de l'Europe ?", a: "La foi chrétienne."},
-      {q: "200 – Nommez deux autres points communs entre les peuples d'Occident au Moyen Âge, outre la foi chrétienne.", a: "Les institutions religieuses et l'application de la féodalité."}
-    ];
-
-    function FlashcardApp() {
-      const [index, setIndex] = React.useState(0);
-      const [showAnswer, setShowAnswer] = React.useState(false);
-      const [score, setScore] = React.useState(0);
-      const [attempted, setAttempted] = React.useState(0);
-      const [jumpValue, setJumpValue] = React.useState("");
-
-      const total = flashcards.length;
-      const current = flashcards[index];
-
-      const nextCard = () => {
-        setShowAnswer(false);
-        setIndex((prev) => (prev + 1) % total);
-      };
-
-      const mark = (isCorrect) => {
-        setAttempted((a) => a + 1);
-        if (isCorrect) setScore((s) => s + 1);
-        nextCard();
-      };
-
-      const jumpTo = () => {
-        const num = parseInt(jumpValue, 10);
-        if (!isNaN(num) && num >= 1 && num <= total) {
-          setIndex(num - 1);
-          setShowAnswer(false);
-        }
-      };
-
-      return (
-        <div className="bg-white/70 backdrop-blur shadow-lg rounded-2xl p-6 flex flex-col gap-4">
-          <h1 className="text-2xl font-bold text-center mb-2">Cartes éclair – Christianisation de l’Occident</h1>
-
-          {/* Contrôle de saut */}
-          <div className="flex justify-center items-center gap-2 mb-4">
-            <input
-              type="number"
-              placeholder="N° carte"
-              className="w-24 px-2 py-1 border rounded-lg text-center"
-              value={jumpValue}
-              onChange={(e) => setJumpValue(e.target.value)}
-            />
-            <button onClick={jumpTo} className="bg-indigo-600 text-white px-3 py-1 rounded-lg shadow active:scale-95 transition">
-              Aller
-            </button>
-          </div>
-
-          {/* Carte actuelle */}
-          <div className="text-center">
-            <p className="text-lg font-medium whitespace-pre-wrap">{current.q}</p>
-            {showAnswer && (
-              <p className="mt-4 text-green-700 font-semibold whitespace-pre-wrap">{current.a}</p>
-            )}
-          </div>
-
-          {/* Boutons réponse */}
-          <div className="flex flex-col sm:flex-row gap-3 justify-center mt-4">
-            {!showAnswer ? (
-              <button
-                onClick={() => setShowAnswer(true)}
-                className="bg-blue-600 text-white px-4 py-2 rounded-xl shadow active:scale-95 transition"
-              >
-                Afficher la réponse
-              </button>
-            ) : (
-              <>
-                <button
-                  onClick={() => mark(true)}
-                  className="bg-green-600 text-white px-4 py-2 rounded-xl shadow active:scale-95 transition"
-                >
-                  J'avais bon ✓
-                </button>
-                <button
-                  onClick={() => mark(false)}
-                  className="bg-red-600 text-white px-4 py-2 rounded-xl shadow active:scale-95 transition"
-                >
-                  Je me suis trompé ✗
-                </button>
-              </>
-            )}
-          </div>
-
-          <div className="text-sm text-gray-700 text-center mt-2">
-            Carte {index + 1}/{total} — Score: {score}/{attempted}
-          </div>
-        </div>
-      );
+  <main id="view-how" class="view">
+    <section class="howto">
+      <h2>使用说明 / How to Use</h2>
+      <ol>
+        <li>在顶部选择 <b>题库</b> 与 <b>模式</b>，设置 <b>题量</b>，点击 <b>开始</b>。</li>
+        <li>练习模式：每题提交后即时显示对错与解析；测试模式：最后统一给出评分与解析。</li>
+        <li>做完后可点击 <b>重练错题</b> 进行针对性训练。</li>
+        <li>若刷新页面，系统会保存进度（同一浏览器），可点击 <b>从上次继续</b>。</li>
+      </ol>
+      <h3>如何新增题库</h3>
+      <p>在 <code>data/</code> 目录添加一个新的 JSON 文件，并在 <code>data/packs.json</code> 中登记。格式示例见 <code>data/latin_week1.json</code>。</p>
+      <pre><code>{
+  "meta": {
+    "id": "latin_week1",
+    "title": "Latin Week 1 基础",
+    "description": "入门语法与核心词汇"
+  },
+  "questions": [
+    {
+      "id": "Q1",
+      "type": "mcq",
+      "question": "“puella” 在句子 “puella aquam portat” 中的语法角色是什么？",
+      "choices": ["主语（主格）", "宾语（宾格）", "与格（间接宾语）", "属格（所有）"],
+      "answer": [0],
+      "explanation": "puella 为主格单数，作主语；aquam 为宾格（受格）作宾语。"
     }
+  ]
+}</code></pre>
+    </section>
+  </main>
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<FlashcardApp />);
-  </script>
+  <footer class="site-footer">
+    <span>Made for Vivi & kid · Works on GitHub Pages · No build needed</span>
+  </footer>
+
+  <script src="app.js"></script>
 </body>
 </html>
