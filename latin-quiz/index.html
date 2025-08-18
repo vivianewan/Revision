@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>拉丁语冲刺测验 | Latin Sprint Quizzes</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <h1>拉丁语冲刺测验 <span class="sub">Latin Sprint Quizzes</span></h1>
+    <nav>
+      <a href="#" id="link-home" class="active">练习</a>
+      <a href="#" id="link-how">使用说明</a>
+    </nav>
+  </header>
+
+  <main id="view-home" class="view active">
+    <section class="controls">
+      <div class="control-group">
+        <label for="pack-select">选择题库：</label>
+        <select id="pack-select"></select>
+      </div>
+      <div class="control-group">
+        <label for="mode-select">模式：</label>
+        <select id="mode-select">
+          <option value="practice">练习（即时反馈）</option>
+          <option value="test">测试（最后统一反馈）</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label for="qcount">题量：</label>
+        <input id="qcount" type="number" min="5" max="100" value="10" />
+      </div>
+      <div class="control-group">
+        <button id="btn-start">开始</button>
+        <button id="btn-resume" class="secondary">从上次继续</button>
+      </div>
+    </section>
+
+    <section id="quiz" class="quiz hidden">
+      <div class="quiz-topbar">
+        <div>进度：<span id="progress">0/0</span></div>
+        <div>分数：<span id="score">0</span></div>
+      </div>
+      <div id="question-container"></div>
+      <div class="actions">
+        <button id="btn-submit">提交答案</button>
+        <button id="btn-next" class="secondary">下一题</button>
+        <button id="btn-show" class="ghost">显示答案</button>
+      </div>
+      <div id="feedback" class="feedback"></div>
+    </section>
+
+    <section id="results" class="results hidden">
+      <h2>结果</h2>
+      <p>得分：<strong id="final-score">0</strong> / <span id="final-total">0</span></p>
+      <div id="review"></div>
+      <div class="actions">
+        <button id="btn-retry-wrong">重练错题</button>
+        <button id="btn-restart" class="secondary">重新开始</button>
+        <button id="btn-export" class="ghost">导出结果（JSON）</button>
+      </div>
+    </section>
+  </main>
+
+  <main id="view-how" class="view">
+    <section class="howto">
+      <h2>使用说明 / How to Use</h2>
+      <ol>
+        <li>在顶部选择 <b>题库</b> 与 <b>模式</b>，设置 <b>题量</b>，点击 <b>开始</b>。</li>
+        <li>练习模式：每题提交后即时显示对错与解析；测试模式：最后统一给出评分与解析。</li>
+        <li>做完后可点击 <b>重练错题</b> 进行针对性训练。</li>
+        <li>若刷新页面，系统会保存进度（同一浏览器），可点击 <b>从上次继续</b>。</li>
+      </ol>
+      <h3>如何新增题库</h3>
+      <p>在 <code>data/</code> 目录添加一个新的 JSON 文件，并在 <code>data/packs.json</code> 中登记。格式示例见 <code>data/latin_week1.json</code>。</p>
+      <pre><code>{
+  "meta": {
+    "id": "latin_week1",
+    "title": "Latin Week 1 基础",
+    "description": "入门语法与核心词汇"
+  },
+  "questions": [
+    {
+      "id": "Q1",
+      "type": "mcq",
+      "question": "“puella” 在句子 “puella aquam portat” 中的语法角色是什么？",
+      "choices": ["主语（主格）", "宾语（宾格）", "与格（间接宾语）", "属格（所有）"],
+      "answer": [0],
+      "explanation": "puella 为主格单数，作主语；aquam 为宾格（受格）作宾语。"
+    }
+  ]
+}</code></pre>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>Made for Vivi & kid · Works on GitHub Pages · No build needed</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
