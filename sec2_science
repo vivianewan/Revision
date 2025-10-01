@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+   <html lang="fr">
+   <head>
+       <meta charset="UTF-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <title>Les Roches et Minéraux</title>
+       <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+       <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+       <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+       <script src="https://cdn.tailwindcss.com"></script>
+   </head>
+   <body>
+       <div id="root"></div>
+       <script type="text/babel">
+           import React, { useState } from 'react';
+import { BookOpen, Mountain, Gem, ArrowRight, Zap, Droplets, Flame, Layers } from 'lucide-react';
+
+const RocksAndMineralsSummary = () => {
+  const [activeSection, setActiveSection] = useState('roches');
+
+  const sections = {
+    roches: {
+      title: "Les Roches",
+      icon: Mountain,
+      color: "bg-amber-100 border-amber-300",
+      content: (
+        <div className="space-y-4">
+          <div className="bg-white p-4 rounded-lg border-2 border-amber-200">
+            <h3 className="font-bold text-lg mb-2">Définition</h3>
+            <p>• Matériaux constituant la croûte terrestre</p>
+            <p>• Assemblage de minéraux (un ou plusieurs types)</p>
+            <p className="mt-2 text-sm italic">≠ Minéral = substance pure, une seule couleur</p>
+          </div>
+        </div>
+      )
+    },
+    types: {
+      title: "3 Types de Roches",
+      icon: Layers,
+      color: "bg-blue-100 border-blue-300",
+      content: (
+        <div className="space-y-3">
+          <div className="bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
+            <h3 className="font-bold text-blue-800 flex items-center gap-2">
+              <Droplets size={20} /> 1. Roches Sédimentaires
+            </h3>
+            <p className="text-sm mt-2 font-semibold">Proviennent d'un dépôt de sédiments</p>
+            <div className="ml-4 mt-2 space-y-1 text-sm">
+              <p><strong>Détritique:</strong> Érosion de roches (débris) → strates/grains collés</p>
+              <p><strong>Biochimique:</strong> Minéralisation de vivants/organismes morts</p>
+              <p><strong>Chimique:</strong> Évaporation d'eau + minéralisation</p>
+            </div>
+          </div>
+
+          <div className="bg-red-50 p-4 rounded-lg border-2 border-red-200">
+            <h3 className="font-bold text-red-800 flex items-center gap-2">
+              <Flame size={20} /> 2. Roches Ignées
+            </h3>
+            <p className="text-sm mt-2 font-semibold">Refroidissement du magma → cristaux désordonnés</p>
+            <div className="ml-4 mt-2 space-y-1 text-sm">
+              <p><strong>Extrusive:</strong> Refroidissement rapide en surface → petits cristaux/trous/vitreux</p>
+              <p><strong>Intrusive:</strong> Refroidissement lent en profondeur → gros cristaux</p>
+            </div>
+          </div>
+
+          <div className="bg-purple-50 p-4 rounded-lg border-2 border-purple-200">
+            <h3 className="font-bold text-purple-800 flex items-center gap-2">
+              <Zap size={20} /> 3. Roches Métamorphiques
+            </h3>
+            <p className="text-sm mt-2 font-semibold">Roches existantes + chaleur/pression → cristaux ordonnés</p>
+            <div className="ml-4 mt-2 space-y-1 text-sm">
+              <p><strong>Régionales:</strong> Fortes pressions → ondulations/rubans</p>
+              <p><strong>De contact:</strong> Grande chaleur → recristallisation, pas de ruban</p>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    cycle: {
+      title: "Cycle des Roches",
+      icon: ArrowRight,
+      color: "bg-green-100 border-green-300",
+      content: (
+        <div className="bg-white p-4 rounded-lg border-2 border-green-200">
+          <div className="space-y-3 text-sm">
+            <div className="flex items-center gap-2">
+              <div className="bg-orange-200 px-3 py-1 rounded">Magma</div>
+              <ArrowRight size={16} />
+              <div className="bg-red-200 px-3 py-1 rounded">Roche Ignée</div>
+              <span className="text-xs">(solidification)</span>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <div className="bg-red-200 px-3 py-1 rounded">Ignée/Métamorphique</div>
+              <ArrowRight size={16} />
+              <div className="bg-blue-200 px-3 py-1 rounded">Roche Sédimentaire</div>
+              <span className="text-xs">(érosion/cimentation)</span>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <div className="bg-gray-200 px-3 py-1 rounded">Toute roche</div>
+              <ArrowRight size={16} />
+              <div className="bg-purple-200 px-3 py-1 rounded">Roche Métamorphique</div>
+              <span className="text-xs">(métamorphisme)</span>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <div className="bg-gray-200 px-3 py-1 rounded">Toute roche</div>
+              <ArrowRight size={16} />
+              <div className="bg-orange-200 px-3 py-1 rounded">Magma</div>
+              <span className="text-xs">(fusion)</span>
+            </div>
+          </div>
+        </div>
+      )
+    },
+    mineraux: {
+      title: "Les Minéraux",
+      icon: Gem,
+      color: "bg-pink-100 border-pink-300",
+      content: (
+        <div className="space-y-4">
+          <div className="bg-white p-4 rounded-lg border-2 border-pink-200">
+            <h3 className="font-bold text-lg mb-2">Définition</h3>
+            <p>• Plus de 4000 sortes</p>
+            <p>• Substance pure (éléments identiques)</p>
+            <p>• Agencement d'atomes selon symétrie particulière</p>
+            <p className="mt-2 text-sm italic">Roche = ensemble de minéraux | Minéral = ensemble d'atomes</p>
+          </div>
+        </div>
+      )
+    },
+    proprietes: {
+      title: "Propriétés des Minéraux",
+      icon: BookOpen,
+      color: "bg-indigo-100 border-indigo-300",
+      content: (
+        <div className="space-y-2 text-sm">
+          <div className="bg-white p-3 rounded border-2 border-indigo-200">
+            <p><strong>Éclat:</strong> Métallique / Sub-métallique / Non-métallique (vitreux, gras, adamentin, soyeux)</p>
+          </div>
+          <div className="bg-white p-3 rounded border-2 border-indigo-200">
+            <p><strong>Couleur:</strong> Couleur prédominante (insuffisante seule)</p>
+          </div>
+          <div className="bg-white p-3 rounded border-2 border-indigo-200">
+            <p><strong>Couleur du trait:</strong> Sur plaque de porcelaine rugueuse</p>
+          </div>
+          <div className="bg-white p-3 rounded border-2 border-indigo-200">
+            <p><strong>Effervescence:</strong> Bulles avec acide (minéraux avec CO₃)</p>
+          </div>
+          <div className="bg-white p-3 rounded border-2 border-indigo-200">
+            <p><strong>Magnétisme:</strong> Attire/repousse aimant (Fe, Ni, Co)</p>
+          </div>
+          <div className="bg-white p-3 rounded border-2 border-indigo-200">
+            <p><strong>Clivage:</strong> Cassure plane/lisse | <strong>Cassure:</strong> Cassure irrégulière</p>
+          </div>
+          <div className="bg-white p-3 rounded border-2 border-indigo-200">
+            <p><strong>Masse volumique:</strong> ρ = m/V (g/mL ou g/cm³)</p>
+          </div>
+          <div className="bg-white p-3 rounded border-2 border-indigo-200">
+            <p><strong>Dureté (Échelle de Mohs 1-10):</strong></p>
+            <p className="ml-4 mt-1">• 1-2.5: Rayable par ongle</p>
+            <p className="ml-4">• 2.5-3: Rayable par monnaie (cuivre)</p>
+            <p className="ml-4">• 3-6.5: Rayable par clou d'acier</p>
+            <p className="ml-4">• 6.5-10: Raye le verre</p>
+            <p className="ml-4 mt-1 italic">Ex: Talc (1), Diamant (10)</p>
+          </div>
+        </div>
+      )
+    },
+    precieuses: {
+      title: "Pierres Précieuses",
+      icon: Gem,
+      color: "bg-yellow-100 border-yellow-300",
+      content: (
+        <div className="bg-white p-4 rounded-lg border-2 border-yellow-200">
+          <h3 className="font-bold text-lg mb-3">Critères requis:</h3>
+          <ul className="space-y-1 text-sm mb-4">
+            <li>✓ Dureté: 7.5-10 sur échelle de Mohs</li>
+            <li>✓ Un seul cristal dans la pierre</li>
+            <li>✓ Rareté</li>
+          </ul>
+          <h3 className="font-bold mb-2">Les 4 pierres précieuses:</h3>
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            <div className="bg-gray-100 p-2 rounded text-center">💎 Diamant</div>
+            <div className="bg-blue-100 p-2 rounded text-center">🔷 Saphir (Bleu)</div>
+            <div className="bg-red-100 p-2 rounded text-center">🔴 Rubis (Rouge)</div>
+            <div className="bg-green-100 p-2 rounded text-center">💚 Émeraude (Vert)</div>
+          </div>
+          <p className="text-xs mt-3 italic">⚠️ Or et argent = métaux, PAS des pierres précieuses</p>
+        </div>
+      )
+    }
+  };
+
+  const Section = sections[activeSection];
+  const IconComponent = Section.icon;
+
+  return (
+    <div className="max-w-6xl mx-auto p-6 bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
+      <h1 className="text-3xl font-bold text-center mb-6 text-slate-800">
+        Les Roches et Minéraux
+      </h1>
+      
+      <div className="flex flex-wrap gap-2 justify-center mb-6">
+        {Object.entries(sections).map(([key, section]) => {
+          const Icon = section.icon;
+          return (
+            <button
+              key={key}
+              onClick={() => setActiveSection(key)}
+              className={`px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2 ${
+                activeSection === key
+                  ? section.color + ' shadow-lg scale-105'
+                  : 'bg-white border-2 border-gray-200 hover:shadow-md'
+              }`}
+            >
+              <Icon size={18} />
+              {section.title}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className={`${Section.color} p-6 rounded-xl shadow-xl`}>
+        <div className="flex items-center gap-3 mb-4">
+          <IconComponent size={32} className="text-slate-700" />
+          <h2 className="text-2xl font-bold text-slate-800">{Section.title}</h2>
+        </div>
+        {Section.content}
+      </div>
+    </div>
+  );
+};
+
+export default RocksAndMineralsSummary;
+       </script>
+   </body>
+   </html>
